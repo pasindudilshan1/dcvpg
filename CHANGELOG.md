@@ -8,7 +8,7 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
----
+## [1.3.1]
 
 ## [1.3.0] — 2026-03-09
 
