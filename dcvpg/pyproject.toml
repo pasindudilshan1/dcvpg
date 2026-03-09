@@ -35,5 +35,5 @@ all      = ["dcvpg[mcp,ai,airflow,prefect,dagster]"]
 dcvpg = "dcvpg.cli.main:cli"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = [".."]
 include = ["dcvpg*"]
