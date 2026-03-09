@@ -82,9 +82,9 @@ jobs:
       - name: Build wheel
         run: |
           pip install build
-          python -m build dcvpg/
+          python -m build
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dcvpg/dist/
+          path: dist/
