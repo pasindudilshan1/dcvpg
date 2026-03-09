@@ -1,0 +1,85 @@
+name: Contract Validation Check
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/**'
+      - '*.yaml'
+      - '*.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/**'
+
+jobs:
+  validate-contracts:
+    name: Validate Changed Contracts
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history for diff detection
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install DCVPG
+        run: pip install dcvpg
+
+      - name: Find changed contract files
+        id: changed
+        run: |
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'contracts/**' || echo "")
+          echo "files=${CHANGED}" >> $GITHUB_OUTPUT
+          echo "Changed contracts: $CHANGED"
+
+      - name: Validate contract YAML syntax
+        run: |
+          for f in $(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'contracts/**' 2>/dev/null); do
+            if [ -f "$f" ]; then
+              echo "Validating: $f"
+              python -c "
+import yaml, sys
+with open('$f') as fh:
+    data = yaml.safe_load(fh)
+if 'contract' not in data:
+    print('ERROR: Missing top-level contract: key in $f')
+    sys.exit(1)
+print('OK: $f')
+"
+            fi
+          done
+
+      - name: Check for breaking schema changes
+        run: |
+          for f in $(git diff --name-only origin/${{ github.base_ref }}...HEAD -- 'contracts/**' 2>/dev/null); do
+            if [ -f "$f" ]; then
+              echo "Schema diff for: $f"
+              # Parse old vs new version of the YAML and flag removed fields
+              python -c "
+import subprocess, yaml, sys
+
+result = subprocess.run(['git', 'show', 'origin/${{ github.base_ref }}:$f'],
+                        capture_output=True, text=True)
+if result.returncode != 0:
+    print(f'New contract — no breaking change check needed for $f')
+    sys.exit(0)
+
+old_data = yaml.safe_load(result.stdout)
+with open('$f') as fh:
+    new_data = yaml.safe_load(fh)
+
+old_fields = {f['field'] for f in old_data.get('contract', {}).get('schema', [])}
+new_fields = {f['field'] for f in new_data.get('contract', {}).get('schema', [])}
+removed = old_fields - new_fields
+if removed:
+    print(f'WARNING: Breaking change detected — removed fields: {removed}')
+    # Warn but do not fail; human review required
+else:
+    print(f'No breaking field removals in $f')
+"
+            fi
+          done
