@@ -25,6 +25,7 @@ jobs:
       - name: Build
         run: |
           pip install build
+          rm -rf dist/
           python -m build
 
       - name: Publish to PyPI
