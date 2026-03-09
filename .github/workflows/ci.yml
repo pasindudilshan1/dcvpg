@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -e "dcvpg/[ai,mcp,airflow]"
+          pip install -e ".[ai,mcp,airflow]"
           pip install pytest pytest-asyncio pytest-cov httpx
 
       - name: Lint

@@ -25,17 +25,15 @@ jobs:
       - name: Build
         run: |
           pip install build
-          python -m build dcvpg/
+          python -m build
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          packages-dir: dcvpg/dist/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dcvpg/dist/*
+          files: dist/*
           generate_release_notes: true
 
   docker:
@@ -68,6 +66,7 @@ jobs:
         with:
           context: .
           file: dcvpg/infra/Dockerfile
+
           push: false
           load: true
           tags: |
