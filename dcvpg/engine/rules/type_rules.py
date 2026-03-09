@@ -36,7 +36,8 @@ class TypeRule(BaseRule):
                 except (ValueError, TypeError):
                     return False
             elif expected_type in ("boolean", "bool"):
-                if isinstance(val, bool): return True
+                if isinstance(val, bool):
+                    return True
                 val_str = str(val).lower()
                 return val_str in ("true", "false", "1", "0", "yes", "no")
             elif expected_type in ("timestamp", "datetime", "date"):
@@ -46,7 +47,8 @@ class TypeRule(BaseRule):
                 except (ValueError, TypeError):
                     return False
             elif expected_type == "json":
-                if isinstance(val, (dict, list)): return True
+                if isinstance(val, (dict, list)):
+                    return True
                 try:
                     import json
                     json.loads(str(val))

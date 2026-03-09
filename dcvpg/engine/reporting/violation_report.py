@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from dcvpg.engine.models import ValidationReport
 

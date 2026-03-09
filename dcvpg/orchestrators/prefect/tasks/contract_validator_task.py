@@ -6,15 +6,14 @@ from dcvpg.engine.validator import Validator
 from dcvpg.engine.quarantine_engine import QuarantineEngine
 from dcvpg.engine.connectors.postgres_connector import PostgresConnector
 from dcvpg.engine.connectors.file_connector import FileConnector
-from dcvpg.engine.models import ValidationReport
-import pandas as pd
-import uuid
 import time
 import os
 
 def _get_connector(type_str: str) -> Any:
-    if type_str == "postgres": return PostgresConnector()
-    if type_str == "file": return FileConnector()
+    if type_str == "postgres":
+        return PostgresConnector()
+    if type_str == "file":
+        return FileConnector()
     raise NotImplementedError(f"Connector {type_str} not implemented")
 
 @task(name="dcvpg_validate", description="Validates incoming data against a declared data contract")

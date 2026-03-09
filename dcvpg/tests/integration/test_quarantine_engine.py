@@ -2,7 +2,6 @@
 import os
 import uuid
 import pytest
-import pandas as pd
 
 pytestmark = pytest.mark.integration
 

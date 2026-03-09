@@ -44,8 +44,6 @@ def infer_schema_from_dataframe(df) -> List[Dict[str, Any]]:
     Infer a minimal schema list from a pandas DataFrame.
     Used by schema_differ to get the live schema from a sampled batch.
     """
-    import pandas as pd
-
     TYPE_MAP = {
         "int64": "integer",
         "int32": "integer",

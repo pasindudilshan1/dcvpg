@@ -2,8 +2,6 @@
 import os
 import textwrap
 import pytest
-import tempfile
-from pathlib import Path
 
 
 CONTRACT_YAML = textwrap.dedent("""\

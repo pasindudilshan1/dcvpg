@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from typing import List, Dict, Optional
+from typing import Optional
 
 router = APIRouter()
 

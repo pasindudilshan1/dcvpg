@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 from dagster import op, OpExecutionContext, Config, Failure
 from dcvpg.config.config_loader import load_config
 from dcvpg.engine.registry import ContractRegistry
@@ -6,7 +6,6 @@ from dcvpg.engine.validator import Validator
 from dcvpg.engine.quarantine_engine import QuarantineEngine
 from dcvpg.engine.connectors.postgres_connector import PostgresConnector
 from dcvpg.engine.connectors.file_connector import FileConnector
-import uuid
 import time
 import os
 
@@ -17,8 +16,10 @@ class ValidationConfig(Config):
     on_failure: str = "quarantine_and_alert"
 
 def _get_connector(type_str: str) -> Any:
-    if type_str == "postgres": return PostgresConnector()
-    if type_str == "file": return FileConnector()
+    if type_str == "postgres":
+        return PostgresConnector()
+    if type_str == "file":
+        return FileConnector()
     raise NotImplementedError(f"Connector {type_str} not implemented")
 
 @op(name="validate_contract_op", description="Dagster op to validate data contracts using DCVPG")

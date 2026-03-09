@@ -1,6 +1,5 @@
 """Performance test: validate a 1M-row batch within the SLA."""
 import time
-import uuid
 import pytest
 import numpy as np
 import pandas as pd

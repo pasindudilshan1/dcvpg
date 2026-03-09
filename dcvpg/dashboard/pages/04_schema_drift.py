@@ -43,7 +43,7 @@ else:
                         language="diff",
                     )
 
-            if st.button(f"🤖 Open Fix PR", key=f"pr_{d.get('contract_name')}"):
+            if st.button("🤖 Open Fix PR", key=f"pr_{d.get('contract_name')}"):
                 result = fetch_api(
                     f"contracts/{d.get('contract_name')}/fix",
                     method="POST",

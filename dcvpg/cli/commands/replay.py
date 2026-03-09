@@ -50,7 +50,7 @@ def replay(batch_id, config_path):
             click.echo(f"❌ FAILED — {report.violations_count} violation(s) remain:")
             for v in report.violation_details[:5]:
                 click.echo(f"   • {v.field}: {v.violation_type}")
-            click.echo(f"   Batch remains in quarantine.")
+            click.echo("   Batch remains in quarantine.")
             raise SystemExit(1)
 
     except (ImportError, AttributeError) as e:

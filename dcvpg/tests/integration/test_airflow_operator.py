@@ -1,10 +1,7 @@
-import pytest
 import pandas as pd
 import os
 import tempfile
-from orchestrators.airflow.operators.contract_validator import DataContractValidatorOperator
-from airflow.models import TaskInstance, DAG
-from datetime import datetime
+from dcvpg.orchestrators.airflow.operators.contract_validator import DataContractValidatorOperator
 
 # A minimal integration test using Airflow Operator without actually starting a DAG
 
@@ -43,7 +40,7 @@ alerting:
         # Create Contract
         contract_path = os.path.join(contracts_dir, 'test_contract.yaml')
         with open(contract_path, 'w') as f:
-             f.write(f'''contract:
+             f.write('''contract:
   name: test_contract
   version: "1.0"
   owner_team: DE

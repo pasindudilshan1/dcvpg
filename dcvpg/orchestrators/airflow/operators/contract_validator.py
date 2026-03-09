@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict
+from typing import Any, Optional
 from airflow.models import BaseOperator
 from airflow.utils.context import Context
 
@@ -20,8 +20,10 @@ logger = logging.getLogger(__name__)
 
 # Basic connector mapping helper
 def load_connector(type_str: str) -> Any:
-    if type_str == "postgres": return PostgresConnector()
-    if type_str == "file": return FileConnector()
+    if type_str == "postgres":
+        return PostgresConnector()
+    if type_str == "file":
+        return FileConnector()
     raise NotImplementedError(f"Connector for {type_str} not implemented yet")
 
 class DataContractValidatorOperator(BaseOperator):

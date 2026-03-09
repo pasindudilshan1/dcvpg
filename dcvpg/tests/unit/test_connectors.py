@@ -1,5 +1,4 @@
 """Unit tests for all data source connectors (mocked)."""
-import pytest
 import pandas as pd
 from unittest.mock import MagicMock, patch
 

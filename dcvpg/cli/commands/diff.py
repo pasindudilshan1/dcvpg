@@ -22,7 +22,6 @@ def diff(contract, config_path):
         from dcvpg.engine.connectors.postgres_connector import PostgresConnector
         from dcvpg.engine.connectors.file_connector import FileConnector
         from dcvpg.engine.reporting.schema_diff import compute_schema_diff, infer_schema_from_dataframe
-        import uuid
 
         config = load_config(config_path)
         registry = ContractRegistry(config.contracts.directory)
@@ -57,15 +56,15 @@ def diff(contract, config_path):
 
         click.echo(f"⚠️  Schema drift detected for '{contract}':\n")
         if result["added_fields"]:
-            click.echo(f"  Added in source (not in contract):")
+            click.echo("  Added in source (not in contract):")
             for f in result["added_fields"]:
                 click.echo(f"    + {f}")
         if result["removed_fields"]:
-            click.echo(f"  Removed from source (still in contract):")
+            click.echo("  Removed from source (still in contract):")
             for f in result["removed_fields"]:
                 click.echo(f"    - {f}")
         if result["type_changed"]:
-            click.echo(f"  Type changes:")
+            click.echo("  Type changes:")
             for f, change in result["type_changed"].items():
                 click.echo(f"    ~ {f}: {change['contract_type']} → {change['live_type']}")
 

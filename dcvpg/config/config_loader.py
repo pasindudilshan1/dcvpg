@@ -2,7 +2,7 @@ import os
 import re
 import yaml
 from typing import Dict, Any, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class ProjectConfig(BaseModel):
     name: str

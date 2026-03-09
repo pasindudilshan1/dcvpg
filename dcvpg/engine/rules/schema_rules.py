@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import Dict, Any, List
+from typing import Dict, Any
 from .base_rule import BaseRule
 from ..models import ValidationResult
 

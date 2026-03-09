@@ -21,7 +21,7 @@ def start(host, port, api_key):
         if api_key:
             os.environ["DCVPG_API_KEY"] = api_key
 
-        click.echo(f"Starting DCVPG MCP Server (stdio mode)...")
+        click.echo("Starting DCVPG MCP Server (stdio mode)...")
         click.echo(f"  API URL : {os.environ.get('DCVPG_API_URL', 'http://localhost:8000/api/v1')}")
         asyncio.run(server_main())
     except ImportError as e:
@@ -37,7 +37,7 @@ def status():
     api_url = os.environ.get("DCVPG_API_URL", "http://localhost:8000/api/v1")
     api_key = os.environ.get("DCVPG_API_KEY", "(not set)")
     mcp_keys = os.environ.get("MCP_API_KEYS", "(not set)")
-    click.echo(f"DCVPG MCP Server Config:")
+    click.echo("DCVPG MCP Server Config:")
     click.echo(f"  DCVPG_API_URL  : {api_url}")
     click.echo(f"  DCVPG_API_KEY  : {'(set)' if api_key != '(not set)' else '(not set)'}")
     click.echo(f"  MCP_API_KEYS   : {'(set)' if mcp_keys != '(not set)' else '(not set)'}")

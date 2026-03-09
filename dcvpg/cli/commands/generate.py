@@ -56,7 +56,7 @@ def generate(source, table, sample_rows, config_path, output_dir):
 
         click.echo(f"\n✅ Contract saved: {output_path}")
         click.echo(f"   Fields profiled: {len(df.columns)}")
-        click.echo(f"\nReview and register:")
+        click.echo("\nReview and register:")
         click.echo(f"$ dcvpg register {output_path}")
 
     except ImportError as e:

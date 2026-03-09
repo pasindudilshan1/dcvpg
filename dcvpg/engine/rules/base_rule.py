@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import pandas as pd
-from typing import Dict, Any, List
+from typing import Dict, Any
 from ..models import ValidationResult
 
 class BaseRule(ABC):

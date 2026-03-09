@@ -60,8 +60,10 @@ def init(project_name):
     # 4. Custom module templates
     src_conn = os.path.join(templates_dir, "custom_connector.py.template")
     src_rule = os.path.join(templates_dir, "custom_rule.py.template")
-    if os.path.exists(src_conn): shutil.copy(src_conn, os.path.join(project_name, "custom_connectors/example_connector.py"))
-    if os.path.exists(src_rule): shutil.copy(src_rule, os.path.join(project_name, "custom_rules/example_rule.py"))
+    if os.path.exists(src_conn):
+        shutil.copy(src_conn, os.path.join(project_name, "custom_connectors/example_connector.py"))
+    if os.path.exists(src_rule):
+        shutil.copy(src_rule, os.path.join(project_name, "custom_rules/example_rule.py"))
 
     # 5. Orchestrator DAG / flow templates
     src_airflow = os.path.join(templates_dir, "airflow_dag.py.template")
