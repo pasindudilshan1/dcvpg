@@ -8,6 +8,10 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.2.0] — 2026-03-09
+
 ### Added
 - GCS connector (`gcs_connector.py`)
 - `config/config_validator.py` for pre-flight config checks
