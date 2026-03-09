@@ -8,7 +8,7 @@ pytestmark = pytest.mark.integration
 
 @pytest.fixture
 def client():
-    os.environ.setdefault("DCVPG_API_KEY", "test-key")
+    os.environ["DCVPG_API_KEY"] = "test-key"
     from dcvpg.api.main import app
     return TestClient(app)
 

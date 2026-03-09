@@ -21,7 +21,8 @@ dependencies = [
   "streamlit>=1.32",
   "psycopg2-binary>=2.9",
   "pandas>=2.0",
-  "sqlalchemy>=2.0"
+  "sqlalchemy>=2.0",
+  "prometheus-client>=0.19"
 ]
 
 [project.optional-dependencies]
