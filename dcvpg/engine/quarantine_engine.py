@@ -1,7 +1,7 @@
 import json
 import logging
 from typing import Dict, Any, List
-from ..models import ValidationReport, QuarantineEvent
+from .models import ValidationReport, QuarantineEvent
 
 # We would import our Postgres connection pool here, but we will mock it for now
 logger = logging.getLogger(__name__)
