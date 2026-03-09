@@ -6,6 +6,7 @@ from dcvpg.engine.validator import Validator
 from dcvpg.engine.quarantine_engine import QuarantineEngine
 from dcvpg.engine.connectors.postgres_connector import PostgresConnector
 from dcvpg.engine.connectors.file_connector import FileConnector
+import uuid
 import time
 import os
 

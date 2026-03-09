@@ -1,5 +1,5 @@
-from typing import List, Dict, Any
-from ..github import GitHubClient
+from typing import Any
+
 
 class PipelinePatcher:
     """

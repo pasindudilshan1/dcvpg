@@ -61,8 +61,8 @@ class ReportBuilder(BaseAgent):
 
     def _fallback_report(self, report: ValidationReport) -> str:
         lines = [
-            f"ROOT CAUSE: Unknown — LLM unavailable.",
-            f"CONFIDENCE: LOW",
+            "ROOT CAUSE: Unknown \u2014 LLM unavailable.",
+            "CONFIDENCE: LOW",
             f"DETAILS: {report.violations_count} violation(s) detected in pipeline '{report.pipeline_name}' "
             f"contract '{report.contract_name}' v{report.contract_version}.",
             "REMEDIATION:",

@@ -18,8 +18,6 @@ class SlackAlerter(BaseAlerter):
             logger.error("Slack webhook URL not found in config/env")
             return False
             
-        color = "#ff0000" if severity == "CRITICAL" else "#ffcc00"
-        
         # Build block kit message
         blocks = [
             {

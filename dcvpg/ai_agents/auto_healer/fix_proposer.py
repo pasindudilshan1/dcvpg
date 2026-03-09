@@ -1,8 +1,7 @@
 import logging
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from dcvpg.ai_agents.base_agent import BaseAgent
-from dcvpg.engine.models import ContractSpec
 
 logger = logging.getLogger(__name__)
 

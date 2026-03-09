@@ -1,4 +1,3 @@
-from typing import Dict, Any, List
 import logging
 from dcvpg.engine.models import ValidationReport
 
@@ -17,9 +16,7 @@ class RootCauseAgent:
     def analyze_incident(self, report: ValidationReport) -> str:
         
         logger.info(f"RCA Agent investigating {report.contract_name}")
-        prompt_path = "ai_agents/rca_agent/prompts/investigation.txt"
-        
-        # E.g. prompt = load(prompt_path); context = build_context(report, fetch_recent_commits(), fetch_db_schema())
+        # E.g. prompt = load(prompt); context = build_context(report)
         # response = LLM(prompt, context)
         
         return "Possible Root Cause: A frontend engineer deployed a form change (Commit #a1b2c3d4) turning 'age' input from int to varchar."

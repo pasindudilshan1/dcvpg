@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Optional, List
+from typing import Optional
 
 from dcvpg.engine.models import ValidationReport
 from dcvpg.ai_agents.base_agent import BaseAgent
