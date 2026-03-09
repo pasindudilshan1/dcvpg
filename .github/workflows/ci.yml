@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -e ".[ai,mcp]"
+          pip install -e "dcvpg/[ai,mcp]"
           pip install pytest pytest-asyncio pytest-cov httpx
 
       - name: Lint
@@ -51,7 +51,7 @@ jobs:
 
       - name: Unit tests
         run: |
-          pytest tests/unit/ -v --cov=dcvpg --cov-report=xml
+          pytest dcvpg/tests/unit/ -v --cov=dcvpg --cov-report=xml
 
       - name: Integration tests
         env:
@@ -62,7 +62,7 @@ jobs:
           DCVPG_DB_PASSWORD: dcvpg_password
           DCVPG_API_KEY: ci-test-key
         run: |
-          pytest tests/integration/ -v -m integration
+          pytest dcvpg/tests/integration/ -v -m integration
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
