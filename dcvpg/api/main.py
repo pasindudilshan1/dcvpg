@@ -1,12 +1,22 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import APIKeyHeader
 from .routers import contracts, pipelines, quarantine, reports, generate
 import os
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from dcvpg.monitoring.metrics import start_metrics_server
+    start_metrics_server(port=int(os.environ.get("METRICS_PORT", "9090")))
+    yield
+
+
 app = FastAPI(
     title="DCVPG Data Contract Validation API",
     description="Core API for Data Contract Validator & Pipeline Guardian",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
 )
 
 # In-memory mock DBs for testing
@@ -31,12 +41,6 @@ app.include_router(pipelines.router, prefix="/api/v1", tags=["Pipelines"], depen
 app.include_router(quarantine.router, prefix="/api/v1", tags=["Quarantine"], dependencies=[Depends(get_api_key)])
 app.include_router(reports.router, prefix="/api/v1", tags=["Reports"], dependencies=[Depends(get_api_key)])
 app.include_router(generate.router, prefix="/api/v1", tags=["AI Generation"], dependencies=[Depends(get_api_key)])
-
-@app.on_event("startup")
-async def startup():
-    from dcvpg.monitoring.metrics import start_metrics_server
-    start_metrics_server(port=int(os.environ.get("METRICS_PORT", "9090")))
-
 
 @app.get("/health")
 def health_check():

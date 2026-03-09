@@ -24,10 +24,12 @@ def register(contract_path, config_path):
     try:
         from dcvpg.config.config_loader import load_config
         from dcvpg.engine.registry import ContractRegistry
+        from dcvpg.engine.contract_loader import load_contract_from_yaml
 
         config = load_config(config_path)
         registry = ContractRegistry(config.contracts.directory)
-        contract = registry.register(contract_path)
+        contract = load_contract_from_yaml(contract_path)
+        registry.register_contract(contract)
         click.echo(f"✅ Registered: {contract.name} v{contract.version}")
         click.echo(f"   Directory : {config.contracts.directory}")
         click.echo(f"   Owner     : {contract.owner_team} / {contract.source_owner}")

@@ -62,6 +62,16 @@ class QuarantineEngine:
                 "resolved_at": None,
             })
 
+    def fetch_batch(self, batch_id: str):
+        """Return (DataFrame, contract_name) for a quarantined batch.
+        The in-memory store retains metadata only, not the original rows,
+        so DataFrame is always None here. A production store would load from S3/GCS/DB.
+        """
+        for event in self._store:
+            if event.get("batch_id") == batch_id:
+                return None, event.get("contract_name")
+        return None, None
+
     def get_quarantined_batches(self, pipeline_name: Optional[str] = None) -> List[Dict[str, Any]]:
         """Return stored quarantine events, optionally filtered by pipeline name."""
         events = self._store
