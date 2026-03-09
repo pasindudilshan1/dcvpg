@@ -48,7 +48,67 @@ DCVPG solves this by making **data quality a first-class, code-reviewed, automat
 
 ---
 
-## Quick Start
+## Who Is This For?
+
+### Already have pipelines? (Most common)
+
+DCVPG wraps around your existing pipelines without requiring rewrites. You add it as a **quality gate** that runs before data reaches production:
+
+```
+Your existing pipeline:
+  extract → transform → [DCVPG validates] → load to production
+                                ↑
+                        stops bad data here
+```
+
+**Step 1 — Generate a contract from your live table (no hand-writing needed):**
+
+```bash
+pip install "dcvpg[ai]"
+export ANTHROPIC_API_KEY=sk-ant-...
+
+dcvpg init my_project && cd my_project
+# Edit dcvpg.config.yaml to point at your database
+
+dcvpg generate --source postgres_main --table orders --output-dir ./contracts
+dcvpg register contracts/orders.yaml
+```
+
+**Step 2 — Add one operator to your existing Airflow DAG:**
+
+```python
+from dcvpg.orchestrators.airflow.operators.contract_validator import DataContractValidatorOperator
+
+validate = DataContractValidatorOperator(
+    task_id="validate_orders",
+    contract_name="orders_raw",
+    config_path="/opt/airflow/dcvpg.config.yaml",
+)
+
+# Gate your existing load task — nothing else changes
+extract >> transform >> validate >> load_to_prod
+```
+
+That's it. DCVPG does not replace or rebuild your pipeline — it guards the data flowing through it.
+
+---
+
+### Building a new pipeline?
+
+Write the contract **first** as the formal agreement between the team that produces the data and the team that consumes it:
+
+```bash
+# 1. Author the contract (or generate from a staging table)
+dcvpg generate --source postgres_staging --table orders --output-dir ./contracts
+
+# 2. Register and validate as part of every PR / CI run
+dcvpg register contracts/orders.yaml
+dcvpg validate --all
+```
+
+A GitHub Actions workflow is scaffolded automatically by `dcvpg init` — every push runs `dcvpg validate --all` so contract regressions are caught in CI before they ever hit production.
+
+---
 
 ```bash
 pip install dcvpg
