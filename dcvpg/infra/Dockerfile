@@ -4,7 +4,9 @@
 FROM python:3.11-slim AS builder
 
 WORKDIR /build
-COPY dcvpg/pyproject.toml .
+# Copy the whole repo so pip install can find pyproject.toml + dcvpg/ package
+COPY pyproject.toml .
+COPY dcvpg/ dcvpg/
 RUN pip install --upgrade pip build && \
     pip install .
 

@@ -1,6 +1,6 @@
 import pandas as pd
-from engine.rules.schema_rules import SchemaPresenceRule
-from engine.rules.quality_rules import NullabilityRule, RangeRule
+from dcvpg.engine.rules.schema_rules import SchemaPresenceRule
+from dcvpg.engine.rules.quality_rules import NullabilityRule, RangeRule
 
 def test_schema_presence():
     rule = SchemaPresenceRule()

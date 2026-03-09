@@ -61,24 +61,12 @@ jobs:
         id: meta
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
 
-      - name: Build image (no push yet)
+      - name: Build & Push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: dcvpg/infra/Dockerfile
-
-          push: false
-          load: true
+          push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/dcvpg:${{ steps.meta.outputs.VERSION }}
             ghcr.io/${{ github.repository_owner }}/dcvpg:latest
-
-      - name: Push image (with retry)
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          retry_wait_seconds: 30
-          command: |
-            docker push ghcr.io/${{ github.repository_owner }}/dcvpg:${{ steps.meta.outputs.VERSION }}
-            docker push ghcr.io/${{ github.repository_owner }}/dcvpg:latest

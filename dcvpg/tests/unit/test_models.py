@@ -1,5 +1,5 @@
 import pytest
-from engine.models import ContractSpec, FieldSpec
+from dcvpg.engine.models import ContractSpec, FieldSpec
 
 def test_contract_spec_valid():
     spec = ContractSpec(
