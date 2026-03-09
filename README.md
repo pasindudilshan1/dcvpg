@@ -1,6 +1,7 @@
 # DCVPG — Data Contract Validator & Pipeline Guardian
 
-[![CI](https://github.com/your-org/dcvpg/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/dcvpg/actions/workflows/ci.yml)
+[![CI](https://github.com/pasindudilshan1/dcvpg/actions/workflows/ci.yml/badge.svg)](https://github.com/pasindudilshan1/dcvpg/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/dcvpg)](https://pypi.org/project/dcvpg/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/pypi/pyversions/dcvpg)](https://pypi.org/project/dcvpg/)
 
