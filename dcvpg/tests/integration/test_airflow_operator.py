@@ -1,3 +1,6 @@
+import pytest
+pytest.importorskip("airflow")
+
 import pandas as pd
 import os
 import tempfile

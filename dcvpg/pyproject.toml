@@ -41,3 +41,6 @@ include = ["dcvpg*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+markers = [
+  "integration: marks tests as integration tests (deselect with '-m not integration')",
+]
