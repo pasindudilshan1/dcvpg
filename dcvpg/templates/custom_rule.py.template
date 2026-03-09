@@ -1,0 +1,27 @@
+from dcvpg.engine.rules.base_rule import BaseRule
+from dcvpg.engine.models import ValidationResult
+import pandas as pd
+from typing import Dict, Any
+
+class CustomExampleValidator(BaseRule):
+    """
+    Validates a specific business condition not covered by generic rules.
+    """
+    def validate(self, data: pd.DataFrame, field: str, params: Dict[str, Any]) -> ValidationResult:
+        if field not in data.columns:
+            return ValidationResult(passed=True, field=field)
+
+        # Example: Reject records where the value starts with "TEST_" in production
+        invalid_mask = data[field].astype(str).str.startswith("TEST_", na=False)
+        invalid_rows = data[invalid_mask]
+
+        if not invalid_rows.empty:
+            return ValidationResult(
+                passed=False,
+                field=field,
+                violation_type="CUSTOM_BUSINESS_LOGIC_VIOLATION",
+                rows_affected=len(invalid_rows),
+                sample_values=invalid_rows[field].unique().tolist()[:5]
+            )
+
+        return ValidationResult(passed=True, field=field)

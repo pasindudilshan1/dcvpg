@@ -1,0 +1,22 @@
+from dcvpg.engine.connectors.base_connector import BaseConnector
+import pandas as pd
+from typing import Dict, Any
+
+class CustomApiConnector(BaseConnector):
+    """
+    Example of a custom connector for a proprietary API.
+    """
+
+    def connect(self, config: Dict[str, Any]) -> None:
+        self.base_url = config.get("base_url")
+        self.token = config.get("api_token")
+
+    def fetch_sample(self, source: str, sample_rows: int = 1000) -> pd.DataFrame:
+        # Example implementation
+        # response = requests.get(f"{self.base_url}/{source}?limit={sample_rows}", headers={"Authorization": f"Bearer {self.token}"})
+        # return pd.DataFrame(response.json()["data"])
+        pass
+
+    def fetch_batch(self, source: str, batch_id: str) -> pd.DataFrame:
+        # Fetch the real batch
+        pass

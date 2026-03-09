@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dcvpg-api
+  labels:
+    app: dcvpg-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dcvpg-api
+  template:
+    metadata:
+      labels:
+        app: dcvpg-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9090"
+    spec:
+      containers:
+        - name: api
+          image: dcvpg:latest
+          ports:
+            - containerPort: 8000
+            - containerPort: 9090
+          envFrom:
+            - configMapRef:
+                name: dcvpg-config
+            - secretRef:
+                name: dcvpg-secrets
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dcvpg-dashboard
+  labels:
+    app: dcvpg-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dcvpg-dashboard
+  template:
+    metadata:
+      labels:
+        app: dcvpg-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: dcvpg:latest
+          command:
+            - streamlit
+            - run
+            - dcvpg/dashboard/app.py
+            - --server.port=8501
+            - --server.address=0.0.0.0
+          ports:
+            - containerPort: 8501
+          envFrom:
+            - configMapRef:
+                name: dcvpg-config
+            - secretRef:
+                name: dcvpg-secrets
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

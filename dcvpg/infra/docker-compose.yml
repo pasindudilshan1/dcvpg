@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: dcvpg_user
+      POSTGRES_PASSWORD: dcvpg_password
+      POSTGRES_DB: dcvpg
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - dcvpg-net
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    command: uvicorn dcvpg.api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DCVPG_DB_HOST=db
+      - DCVPG_DB_USER=dcvpg_user
+      - DCVPG_DB_PASSWORD=dcvpg_password
+      - DCVPG_API_KEY=${DCVPG_API_KEY:-my-secret-key}
+    depends_on:
+      - db
+    networks:
+      - dcvpg-net
+
+  dashboard:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile
+    command: streamlit run dcvpg/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - DCVPG_API_URL=http://api:8000/api/v1
+      - DCVPG_API_KEY=${DCVPG_API_KEY:-my-secret-key}
+    depends_on:
+      - api
+    networks:
+      - dcvpg-net
+
+volumes:
+  pgdata:
+
+networks:
+  dcvpg-net:
+    driver: bridge
+

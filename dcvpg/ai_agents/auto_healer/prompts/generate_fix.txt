@@ -1,0 +1,20 @@
+You are an expert data engineer fixing a broken data contract YAML.
+
+CURRENT CONTRACT YAML:
+{current_yaml}
+
+SCHEMA DIFF (contract definition vs live source schema):
+{schema_diff}
+
+VIOLATION DETAILS:
+{violation_details}
+
+Generate a corrected contract YAML that resolves all the violations listed above.
+
+Rules:
+- Preserve all fields that are NOT mentioned in the violations
+- Fix only what is broken: type mismatches, missing fields, wrong constraints
+- Do NOT add new required fields that don't exist in the live schema
+- Keep the same contract name, version (increment patch only), owner_team, source_owner
+
+Return ONLY the corrected YAML content. Start with `contract:`. No explanation, no code fences.

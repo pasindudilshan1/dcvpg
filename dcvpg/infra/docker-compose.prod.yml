@@ -1,0 +1,98 @@
+version: '3.8'
+# Production Docker Compose — uses pre-built image from registry
+
+x-common-env: &common-env
+  DCVPG_DB_HOST: db
+  DCVPG_DB_PORT: "5432"
+  DCVPG_DB_NAME: dcvpg
+  DCVPG_DB_USER: ${DCVPG_DB_USER:-dcvpg_user}
+  DCVPG_DB_PASSWORD: ${DCVPG_DB_PASSWORD}
+  DCVPG_API_KEY: ${DCVPG_API_KEY}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DCVPG_DB_USER:-dcvpg_user}
+      POSTGRES_PASSWORD: ${DCVPG_DB_PASSWORD}
+      POSTGRES_DB: dcvpg
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    networks:
+      - dcvpg-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DCVPG_DB_USER:-dcvpg_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    image: ${DCVPG_IMAGE:-dcvpg:latest}
+    command: uvicorn dcvpg.api.main:app --host 0.0.0.0 --port 8000 --workers 4
+    ports:
+      - "8000:8000"
+    environment:
+      <<: *common-env
+      METRICS_PORT: "9090"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - dcvpg-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  dashboard:
+    image: ${DCVPG_IMAGE:-dcvpg:latest}
+    command: streamlit run dcvpg/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      <<: *common-env
+      DCVPG_API_URL: http://api:8000/api/v1
+    depends_on:
+      - api
+    networks:
+      - dcvpg-net
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9091:9090"
+    networks:
+      - dcvpg-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - dcvpg-net
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  dcvpg-net:
+    driver: bridge

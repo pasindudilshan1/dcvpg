@@ -1,0 +1,21 @@
+contract:
+  name: example_contract
+  version: 1.0
+  owner_team: data-engineering
+  source_owner: backend-team
+  source_connection: my_postgres_db
+  source_table: example_table
+
+  schema:
+    - field: id
+      type: integer
+      nullable: false
+      unique: true
+
+    - field: created_at
+      type: timestamp
+      nullable: false
+
+    - field: status
+      type: string
+      allowed_values: [active, pending, suspended]

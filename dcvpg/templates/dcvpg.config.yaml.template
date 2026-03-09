@@ -1,0 +1,37 @@
+project:
+  name: my-data-platform
+  team: data-engineering
+  environment: production
+
+contracts:
+  directory: ./contracts
+  auto_register: true
+  watch_mode: false
+
+connections:
+  - name: my_postgres_db
+    type: postgres
+    host: ${DB_HOST}
+    port: 5432
+    database: my_database
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+extensions:
+  custom_rules_dir: ./custom_rules
+  custom_connectors_dir: ./custom_connectors
+
+database:
+  host: ${DCVPG_DB_HOST}
+  port: 5432
+  name: dcvpg
+  user: ${DCVPG_DB_USER}
+  password: ${DCVPG_DB_PASSWORD}
+
+alerting:
+  default_severity_threshold: WARNING
+  slack:
+    enabled: false
+    webhook_env: SLACK_WEBHOOK_URL
+    channel: "#data-ops"
+    mention_owners: true

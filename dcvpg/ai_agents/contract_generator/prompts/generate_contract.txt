@@ -1,0 +1,15 @@
+Generate a DCVPG data contract YAML for the table '{table_name}' in data source '{source_name}'.
+
+Field profiles discovered from {sample_rows} rows of sample data:
+{field_profiles}
+
+Rules for generating the contract:
+1. Use inferred_type as the 'type' field (integer / float / string / timestamp / boolean)
+2. Set nullable: false ONLY when null_rate is exactly 0.0
+3. Set unique: true ONLY when unique_rate is 1.0 AND the field name contains "id" or "_key"
+4. Add allowed_values if sample_values is present AND has 10 or fewer entries
+5. Add min and max constraints for numeric fields
+6. Use snake_case for field names and contract name
+7. Do NOT invent fields that are not in the profile list
+
+Output ONLY the YAML content. Start with `contract:`. No explanation, no code fences.

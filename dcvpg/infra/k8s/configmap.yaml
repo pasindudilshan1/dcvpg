@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dcvpg-config
+data:
+  DCVPG_DB_HOST: "postgres"
+  DCVPG_DB_PORT: "5432"
+  DCVPG_DB_NAME: "dcvpg"
+  DCVPG_DB_USER: "dcvpg_user"
+  DCVPG_API_URL: "http://dcvpg-api/api/v1"
+  METRICS_PORT: "9090"
+---
+# Secret template — fill in actual values or use external-secrets / sealed-secrets
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dcvpg-secrets
+type: Opaque
+stringData:
+  DCVPG_DB_PASSWORD: "REPLACE_ME"
+  DCVPG_API_KEY: "REPLACE_ME"
+  ANTHROPIC_API_KEY: "REPLACE_ME"
+  GITHUB_TOKEN: "REPLACE_ME"

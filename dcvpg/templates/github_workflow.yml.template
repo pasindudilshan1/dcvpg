@@ -1,0 +1,61 @@
+name: DCVPG Contract Validation
+
+on:
+  push:
+    paths:
+      - 'contracts/**'
+      - 'dcvpg.config.yaml'
+  pull_request:
+    paths:
+      - 'contracts/**'
+  schedule:
+    - cron: '0 * * * *'   # hourly
+
+jobs:
+  validate-contracts:
+    name: Validate Data Contracts
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: dcvpg
+          POSTGRES_PASSWORD: dcvpg
+          POSTGRES_DB: dcvpg
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install DCVPG
+        run: pip install dcvpg
+
+      - name: Run contract validation
+        env:
+          DCVPG_DB_HOST: localhost
+          DCVPG_DB_PORT: 5432
+          DCVPG_DB_NAME: dcvpg
+          DCVPG_DB_USER: dcvpg
+          DCVPG_DB_PASSWORD: dcvpg
+        run: dcvpg validate --all --config dcvpg.config.yaml
+
+      - name: Upload violation report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: violation-report
+          path: .dcvpg/reports/

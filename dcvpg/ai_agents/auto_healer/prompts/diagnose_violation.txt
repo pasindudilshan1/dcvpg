@@ -1,0 +1,24 @@
+You are an expert data engineer diagnosing a contract violation.
+
+A data pipeline has reported the following violation:
+
+PIPELINE: {pipeline_name}
+CONTRACT: {contract_name}
+VIOLATION TYPE: {violation_type}
+FIELD: {field_name}
+EXPECTED: {expected_value}
+ROWS AFFECTED: {rows_affected} of {total_rows}
+
+CURRENT CONTRACT YAML:
+{contract_yaml}
+
+LIVE SCHEMA (from actual data source):
+{live_schema}
+
+Analyze the violation and respond with:
+1. What changed (upstream schema drift, data quality issue, or contract misconfiguration)
+2. Whether this can be auto-healed (YES/NO)
+3. The recommended fix (YAML patch description)
+4. Risk level of auto-healing (LOW/MEDIUM/HIGH)
+
+Keep the response concise and actionable.
