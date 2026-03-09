@@ -43,6 +43,10 @@ class RestApiConnector(BaseConnector):
             encoded = base64.b64encode(f"{user}:{pwd}".encode()).decode()
             self.headers["Authorization"] = f"Basic {encoded}"
 
+        # json_path selects the array from the response body.
+        # Use '$' or leave empty to indicate the response root is the array.
+        self.json_path: str = config.get("json_path", "").strip()
+
         if not self.base_url:
             raise ValueError("RestApiConnector requires 'base_url' in config.")
 
@@ -54,7 +58,16 @@ class RestApiConnector(BaseConnector):
             return resp.json()
 
     def _to_dataframe(self, data: Any) -> pd.DataFrame:
-        """Normalise JSON response (list or dict with 'data' key) into DataFrame."""
+        """Normalise JSON response into a DataFrame, respecting json_path."""
+        # If json_path is set and is not the root marker '$', navigate the dict
+        path = getattr(self, "json_path", "")
+        if path and path != "$" and isinstance(data, dict):
+            for key in path.split("."):
+                if isinstance(data, dict) and key in data:
+                    data = data[key]
+                else:
+                    break
+
         if isinstance(data, list):
             return pd.DataFrame(data)
         if isinstance(data, dict):
@@ -62,7 +75,7 @@ class RestApiConnector(BaseConnector):
             for key in ("data", "results", "items", "records"):
                 if key in data and isinstance(data[key], list):
                     return pd.DataFrame(data[key])
-            # Fallback: single record
+            # Fallback: single-record response
             return pd.DataFrame([data])
         raise ValueError(f"Cannot convert API response of type {type(data)} to DataFrame")
 

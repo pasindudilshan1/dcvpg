@@ -10,6 +10,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.0] — 2026-03-09
+
+### Added
+- `dcvpg serve api` CLI command — starts the FastAPI REST API via uvicorn without needing to know uvicorn directly
+- `dcvpg serve dashboard` CLI command — resolves the installed Streamlit dashboard path automatically; no repo clone required
+
+### Fixed
+- Dashboard could not be started from an installed package (`streamlit run dcvpg/dashboard/app.py` failed outside the repo); `dcvpg serve dashboard` resolves the correct path via `importlib`
+
+---
+
 ## [1.2.0] — 2026-03-09
 
 ### Added

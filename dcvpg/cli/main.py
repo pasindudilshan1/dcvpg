@@ -7,6 +7,7 @@ from .commands.diff import diff
 from .commands.status import status
 from .commands.replay import replay
 from .commands.mcp_server import mcp_server
+from .commands.serve import serve
 
 
 @click.group()
@@ -27,3 +28,4 @@ cli.add_command(diff)
 cli.add_command(status)
 cli.add_command(replay)
 cli.add_command(mcp_server, name="mcp-server")
+cli.add_command(serve)

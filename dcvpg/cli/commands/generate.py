@@ -17,8 +17,25 @@ def generate(source, table, sample_rows, config_path, output_dir):
     try:
         from dcvpg.config.config_loader import load_config
         from dcvpg.engine.connectors.postgres_connector import PostgresConnector
+        from dcvpg.engine.connectors.mysql_connector import MySQLConnector
+        from dcvpg.engine.connectors.snowflake_connector import SnowflakeConnector
+        from dcvpg.engine.connectors.bigquery_connector import BigQueryConnector
+        from dcvpg.engine.connectors.s3_connector import S3Connector
+        from dcvpg.engine.connectors.gcs_connector import GCSConnector
+        from dcvpg.engine.connectors.rest_api_connector import RestApiConnector
         from dcvpg.engine.connectors.file_connector import FileConnector
         from dcvpg.ai_agents.contract_generator.generator_agent import ContractGeneratorAgent
+
+        _CONNECTOR_MAP = {
+            "postgres":  PostgresConnector,
+            "mysql":     MySQLConnector,
+            "snowflake": SnowflakeConnector,
+            "bigquery":  BigQueryConnector,
+            "s3":        S3Connector,
+            "gcs":       GCSConnector,
+            "rest":      RestApiConnector,
+            "file":      FileConnector,
+        }
 
         config = load_config(config_path)
         conn_config = next((c for c in config.connections if c.name == source), None)
@@ -26,16 +43,19 @@ def generate(source, table, sample_rows, config_path, output_dir):
             click.echo(f"Error: Connection '{source}' not found in {config_path}")
             raise SystemExit(1)
 
-        click.echo(f"Connecting to {source} ({conn_config.type})...")
-        if conn_config.type == "postgres":
-            connector = PostgresConnector()
-        elif conn_config.type == "file":
-            connector = FileConnector()
-        else:
-            click.echo(f"Error: Connector type '{conn_config.type}' not yet supported in CLI.")
+        connector_cls = _CONNECTOR_MAP.get(conn_config.type)
+        if connector_cls is None:
+            supported = ", ".join(_CONNECTOR_MAP.keys())
+            click.echo(
+                f"Error: Connector type '{conn_config.type}' is not supported.\n"
+                f"Supported types: {supported}"
+            )
             raise SystemExit(1)
 
+        click.echo(f"Connecting to {source} ({conn_config.type})...")
+        connector = connector_cls()
         connector.connect(conn_config.model_dump())
+
         click.echo(f"Sampling {sample_rows} rows from {table}...")
         df = connector.fetch_sample(source=table, sample_rows=sample_rows)
         click.echo(f"Profiling {len(df.columns)} fields...")
