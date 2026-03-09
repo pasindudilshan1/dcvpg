@@ -20,7 +20,8 @@ dependencies = [
   "fastapi>=0.110",
   "streamlit>=1.32",
   "psycopg2-binary>=2.9",
-  "pandas>=2.0"
+  "pandas>=2.0",
+  "sqlalchemy>=2.0"
 ]
 
 [project.optional-dependencies]
