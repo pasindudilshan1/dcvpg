@@ -14,11 +14,13 @@ def profile_dataframe(df: pd.DataFrame, sample_rows: int = 1000) -> List[Dict[st
         series = sample[col]
 
         # Detect columns containing unhashable types (dicts, lists — nested JSON objects)
+        _is_nested = series.dropna().apply(lambda x: isinstance(x, (dict, list))).any()
+        if _is_nested:
+            series = series.apply(lambda x: str(x) if isinstance(x, (dict, list)) else x)
         try:
             unique_count = int(series.nunique())
         except TypeError:
-            # Nested object column — serialize to JSON string for profiling
-            series = series.apply(lambda x: str(x) if isinstance(x, (dict, list)) else x)
+            series = series.apply(str)
             unique_count = int(series.nunique())
 
         profile: Dict[str, Any] = {
@@ -50,6 +52,8 @@ def profile_dataframe(df: pd.DataFrame, sample_rows: int = 1000) -> List[Dict[st
         elif pd.api.types.is_bool_dtype(series):
             profile["inferred_type"] = "boolean"
 
+        elif _is_nested:
+            profile["inferred_type"] = "json"
         else:
             profile["inferred_type"] = "string"
             non_null = series.dropna().astype(str)

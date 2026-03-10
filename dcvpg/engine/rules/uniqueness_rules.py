@@ -22,12 +22,16 @@ class UniquenessRule(BaseRule):
         duplicates = series[series.duplicated(keep=False)]
         
         if not duplicates.empty:
+            try:
+                sample_values = duplicates.unique()[:5].tolist()
+            except TypeError:
+                sample_values = duplicates.apply(str).unique()[:5].tolist()
             return ValidationResult(
                 passed=False,
                 field=field,
                 violation_type="UNIQUENESS_VIOLATION",
                 rows_affected=len(duplicates),
-                sample_values=duplicates.unique()[:5].tolist(),
+                sample_values=sample_values,
                 expected_value="Unique values"
             )
             

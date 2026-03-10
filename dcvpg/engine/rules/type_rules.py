@@ -61,12 +61,16 @@ class TypeRule(BaseRule):
         invalid_rows = series[invalid_mask]
         
         if not invalid_rows.empty:
+            try:
+                sample_values = invalid_rows.unique()[:5].tolist()
+            except TypeError:
+                sample_values = invalid_rows.apply(str).unique()[:5].tolist()
             return ValidationResult(
                 passed=False,
                 field=field,
                 violation_type="TYPE_MISMATCH",
                 rows_affected=len(invalid_rows),
-                sample_values=invalid_rows.unique()[:5].tolist(),
+                sample_values=sample_values,
                 expected_value=f"{expected_type}"
             )
             

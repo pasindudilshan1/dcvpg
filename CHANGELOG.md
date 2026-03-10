@@ -10,6 +10,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.6] — 2026-03-10
+
+### Fixed
+- `RULE_CRASH` on columns containing nested JSON objects (`dict`/`list` values) — `TypeRule` and `UniquenessRule` both called `.unique()` which raises `TypeError: unhashable type: 'dict'`; now falls back to `.apply(str).unique()` safely
+- Profiler now infers `type: json` (instead of `type: string`) for columns containing `dict` or `list` values, so generated contracts correctly type nested fields and avoid false type-mismatch violations on re-validation
+- API `/contracts` endpoint was hardcoded to return a single dummy `orders_raw` contract; now reads from the real contract registry using `DCVPG_CONFIG_PATH` env var, so the dashboard reflects actual deployed contracts
+
+---
+
 ## [1.3.5] — 2026-03-10
 
 ### Fixed
