@@ -8,6 +8,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.3.3] — 2026-03-10
+
+### Fixed
+- `dcvpg validate` — REST connector (and all other connector types: `mysql`, `snowflake`, `bigquery`, `s3`, `gcs`) were unavailable in the CLI; `_get_connector` in `validate.py` now uses the same full connector map as `generate`
+
+---
+
 ## [1.3.1]
 
 ## [1.3.0] — 2026-03-09
