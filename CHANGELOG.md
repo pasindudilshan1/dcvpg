@@ -10,6 +10,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.5] — 2026-03-10
+
+### Fixed
+- `dcvpg generate` — crashed with `TypeError: unhashable type: 'dict'` when profiling REST API responses containing nested JSON objects (e.g. JSONPlaceholder `/users` with `address`, `company` fields); profiler now converts `dict`/`list` columns to strings before computing `nunique()` and `sample_values`
+
+---
+
 ## [1.3.4] — 2026-03-10
 
 ### Fixed

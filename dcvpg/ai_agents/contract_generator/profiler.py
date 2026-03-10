@@ -12,13 +12,22 @@ def profile_dataframe(df: pd.DataFrame, sample_rows: int = 1000) -> List[Dict[st
 
     for col in sample.columns:
         series = sample[col]
+
+        # Detect columns containing unhashable types (dicts, lists — nested JSON objects)
+        try:
+            unique_count = int(series.nunique())
+        except TypeError:
+            # Nested object column — serialize to JSON string for profiling
+            series = series.apply(lambda x: str(x) if isinstance(x, (dict, list)) else x)
+            unique_count = int(series.nunique())
+
         profile: Dict[str, Any] = {
             "field": col,
             "dtype": str(series.dtype),
             "null_count": int(series.isna().sum()),
             "null_rate": round(float(series.isna().mean()), 4),
-            "unique_count": int(series.nunique()),
-            "unique_rate": round(float(series.nunique() / max(len(series), 1)), 4),
+            "unique_count": unique_count,
+            "unique_rate": round(float(unique_count / max(len(series), 1)), 4),
         }
 
         if pd.api.types.is_integer_dtype(series):
@@ -50,7 +59,10 @@ def profile_dataframe(df: pd.DataFrame, sample_rows: int = 1000) -> List[Dict[st
 
         # Suggest allowed_values for low-cardinality columns
         if 0 < profile["unique_count"] <= 20:
-            profile["sample_values"] = series.dropna().unique().tolist()[:20]
+            try:
+                profile["sample_values"] = series.dropna().unique().tolist()[:20]
+            except TypeError:
+                profile["sample_values"] = series.dropna().apply(str).unique().tolist()[:20]
 
         profiles.append(profile)
 
