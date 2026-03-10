@@ -49,9 +49,13 @@ def validate(validate_all, contract, config_path):
             "file":      FileConnector,
         }
 
+        from dcvpg.engine.report_store import ReportStore
+
         config = load_config(config_path)
         registry = ContractRegistry(config.contracts.directory)
         contracts = registry.list_contracts() if validate_all else [registry.get_contract(contract)]
+
+        store = ReportStore(os.path.dirname(os.path.abspath(config_path)))
 
         def _get_connector(type_str):
             connector_cls = _CONNECTOR_MAP.get(type_str)
@@ -84,6 +88,18 @@ def validate(validate_all, contract, config_path):
                 engine = Validator(c, custom_dir)
                 report = engine.validate_batch(df, pipeline_name=c.name, duration_ms=duration_ms)
 
+                # Persist run to the file-based store so the API/dashboard can read it
+                store.save_run({
+                    "pipeline_name": c.name,
+                    "contract_name": c.name,
+                    "contract_version": c.version,
+                    "status": report.status,
+                    "rows_processed": report.rows_processed,
+                    "violations_count": report.violations_count,
+                    "duration_ms": duration_ms,
+                    "violation_details": [v.model_dump(exclude_none=True) for v in report.violation_details],
+                })
+
                 if report.status == "PASSED":
                     click.echo(f"  ✅ PASSED — {report.rows_processed} rows in {duration_ms}ms")
                     pass_count += 1
@@ -94,8 +110,20 @@ def validate(validate_all, contract, config_path):
                     for v in report.violation_details[:5]:
                         click.echo(f"     • {v.field}: {v.violation_type} (rows: {v.rows_affected})")
                     fail_count += 1
+                    batch_id = str(uuid.uuid4())
                     quarantine = QuarantineEngine(config.database.model_dump())
-                    quarantine.isolate_batch(report, str(uuid.uuid4()))
+                    quarantine.isolate_batch(report, batch_id)
+                    # Also persist each violation group as a quarantine event
+                    for v in report.violation_details:
+                        store.save_quarantine({
+                            "batch_id": batch_id,
+                            "pipeline_name": c.name,
+                            "contract_name": c.name,
+                            "contract_version": c.version,
+                            "violation_type": v.violation_type or "UNKNOWN",
+                            "affected_field": v.field or "unknown",
+                            "rows_affected": v.rows_affected or 0,
+                        })
 
             except Exception as e:
                 click.echo(f"  💥 Error validating {c.name}: {e}")

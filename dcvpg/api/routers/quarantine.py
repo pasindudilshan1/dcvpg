@@ -1,28 +1,29 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from typing import Optional
+import os
 
 router = APIRouter()
 
+
+def _get_store():
+    from dcvpg.engine.report_store import ReportStore
+    config_path = os.environ.get("DCVPG_CONFIG_PATH", "./dcvpg.config.yaml")
+    base_dir = os.path.dirname(os.path.abspath(config_path))
+    return ReportStore(base_dir)
+
+
 @router.get("/quarantine")
 def list_quarantine_batches(pipeline: Optional[str] = None):
-    # Dummy list
-    return [{
-        "batch_id": "q_20260309_001",
-        "pipeline_name": "orders_pipeline",
-        "contract_name": "orders_raw",
-        "violation_type": "FIELD_MISSING",
-        "rows_affected": 14823,
-        "resolved": False
-    }]
+    return _get_store().get_quarantine_events(pipeline=pipeline)
+
 
 @router.patch("/quarantine/{id}/resolve")
-def resolve_quarantine(id: str, replay: bool = False):
-    if id != "q_20260309_001":
-        raise HTTPException(status_code=404, detail="Quarantine batch not found")
-        
+def resolve_quarantine(id: str, replay: bool = False, discard: bool = False):
+    store = _get_store()
+    found = store.resolve_batch(id)
+    if not found:
+        return {"status": "NOT_FOUND", "batch_id": id}
     response = {"status": "RESOLVED", "batch_id": id}
     if replay:
-        # Trigger replay logic via orchestrator/CLI
         response["replay_status"] = "TRIGGERED"
-        
     return response

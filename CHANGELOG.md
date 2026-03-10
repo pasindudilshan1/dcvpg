@@ -10,12 +10,22 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.7] — 2026-03-10
+
+### Fixed
+- `GET /pipelines`, `GET /quarantine`, `GET /reports/incidents`, `GET /reports/drift` API endpoints were all hardcoded mock data (`orders_pipeline`, `q_20260309_001`, hard-coded incident counts, etc.); replaced with a lightweight JSONL file store (`engine/report_store.py`) that persists real validation runs and quarantine events under `{project}/.dcvpg_data/`
+- `dcvpg validate` now persists each run and every quarantine event to the store so the dashboard immediately reflects actual validation results
+- Schema drift endpoint now returns an empty `{"drifts": []}` payload instead of fabricated `orders_raw` drift data
+
+---
+
 ## [1.3.6] — 2026-03-10
 
 ### Fixed
 - `RULE_CRASH` on columns containing nested JSON objects (`dict`/`list` values) — `TypeRule` and `UniquenessRule` both called `.unique()` which raises `TypeError: unhashable type: 'dict'`; now falls back to `.apply(str).unique()` safely
 - Profiler now infers `type: json` (instead of `type: string`) for columns containing `dict` or `list` values, so generated contracts correctly type nested fields and avoid false type-mismatch violations on re-validation
 - API `/contracts` endpoint was hardcoded to return a single dummy `orders_raw` contract; now reads from the real contract registry using `DCVPG_CONFIG_PATH` env var, so the dashboard reflects actual deployed contracts
+- Dashboard contract registry page — `pyarrow.lib.ArrowInvalid` when rendering schema table with mixed-type `allowed_values` column (e.g. integer list in one contract, string list in another); list/dict cells are now serialised to comma-separated strings before passing to `st.dataframe`
 
 ---
 
