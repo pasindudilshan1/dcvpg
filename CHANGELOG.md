@@ -10,6 +10,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.4] — 2026-03-10
+
+### Fixed
+- Airflow operator (`orchestrators/airflow/operators/contract_validator.py`) — hardcoded `PostgresConnector` replaced with full connector map (`postgres`, `mysql`, `snowflake`, `bigquery`, `s3`, `gcs`, `rest`, `file`)
+- Prefect task (`orchestrators/prefect/tasks/contract_validator_task.py`) — same hardcoded connector bug fixed with full connector map
+- Dagster op (`orchestrators/dagster/ops/contract_validator_op.py`) — same hardcoded connector bug fixed with full connector map
+- Airflow DAG template (`templates/airflow_dag.py.template`) — hardcoded `PostgresConnector` in scaffolded DAG replaced with full connector map
+- Prefect flow template (`templates/prefect_flow.py.template`) — same template connector bug fixed
+
+---
+
 ## [1.3.3] — 2026-03-10
 
 ### Fixed

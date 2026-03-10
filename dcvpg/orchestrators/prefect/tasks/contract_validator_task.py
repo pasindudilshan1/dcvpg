@@ -5,17 +5,34 @@ from dcvpg.engine.registry import ContractRegistry
 from dcvpg.engine.validator import Validator
 from dcvpg.engine.quarantine_engine import QuarantineEngine
 from dcvpg.engine.connectors.postgres_connector import PostgresConnector
+from dcvpg.engine.connectors.mysql_connector import MySQLConnector
+from dcvpg.engine.connectors.snowflake_connector import SnowflakeConnector
+from dcvpg.engine.connectors.bigquery_connector import BigQueryConnector
+from dcvpg.engine.connectors.s3_connector import S3Connector
+from dcvpg.engine.connectors.gcs_connector import GCSConnector
+from dcvpg.engine.connectors.rest_api_connector import RestApiConnector
 from dcvpg.engine.connectors.file_connector import FileConnector
 import uuid
 import time
 import os
 
+_CONNECTOR_MAP = {
+    "postgres":  PostgresConnector,
+    "mysql":     MySQLConnector,
+    "snowflake": SnowflakeConnector,
+    "bigquery":  BigQueryConnector,
+    "s3":        S3Connector,
+    "gcs":       GCSConnector,
+    "rest":      RestApiConnector,
+    "file":      FileConnector,
+}
+
 def _get_connector(type_str: str) -> Any:
-    if type_str == "postgres":
-        return PostgresConnector()
-    if type_str == "file":
-        return FileConnector()
-    raise NotImplementedError(f"Connector {type_str} not implemented")
+    connector_cls = _CONNECTOR_MAP.get(type_str)
+    if connector_cls is None:
+        supported = ", ".join(_CONNECTOR_MAP.keys())
+        raise NotImplementedError(f"Connector '{type_str}' not supported. Supported: {supported}")
+    return connector_cls()
 
 @task(name="dcvpg_validate", description="Validates incoming data against a declared data contract")
 def validate_contract(

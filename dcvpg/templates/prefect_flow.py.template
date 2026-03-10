@@ -14,6 +14,24 @@ def validate_contract(contract_name: str) -> dict:
     from dcvpg.engine.registry import ContractRegistry
     from dcvpg.engine.validator import Validator
     from dcvpg.engine.connectors.postgres_connector import PostgresConnector
+    from dcvpg.engine.connectors.mysql_connector import MySQLConnector
+    from dcvpg.engine.connectors.snowflake_connector import SnowflakeConnector
+    from dcvpg.engine.connectors.bigquery_connector import BigQueryConnector
+    from dcvpg.engine.connectors.s3_connector import S3Connector
+    from dcvpg.engine.connectors.gcs_connector import GCSConnector
+    from dcvpg.engine.connectors.rest_api_connector import RestApiConnector
+    from dcvpg.engine.connectors.file_connector import FileConnector
+
+    _CONNECTOR_MAP = {
+        "postgres":  PostgresConnector,
+        "mysql":     MySQLConnector,
+        "snowflake": SnowflakeConnector,
+        "bigquery":  BigQueryConnector,
+        "s3":        S3Connector,
+        "gcs":       GCSConnector,
+        "rest":      RestApiConnector,
+        "file":      FileConnector,
+    }
 
     config = load_config("./dcvpg.config.yaml")
     registry = ContractRegistry(config.contracts.directory)
@@ -23,7 +41,11 @@ def validate_contract(contract_name: str) -> dict:
     if not conn_cfg:
         raise ValueError(f"Connection '{c.source_connection}' not found in config.")
 
-    connector = PostgresConnector()
+    connector_cls = _CONNECTOR_MAP.get(conn_cfg.type)
+    if connector_cls is None:
+        supported = ", ".join(_CONNECTOR_MAP.keys())
+        raise ValueError(f"Connector type '{conn_cfg.type}' not supported. Supported: {supported}")
+    connector = connector_cls()
     connector.connect(conn_cfg.model_dump())
     source = getattr(c, "source_table", None) or c.name
 
