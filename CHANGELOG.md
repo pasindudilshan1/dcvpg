@@ -10,6 +10,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.6] — 2026-03-12
+
+### Fixed
+- `RootCauseAgent.analyze_incident()` in `rca_agent/rca.py` was a hardcoded stub returning a fake commit reference; now inherits `BaseAgent` and delegates to `ReportBuilder.build_rca_report()` which calls Claude via `call_llm()` with a structured prompt, and falls back to a template report if the LLM is unavailable
+- `GitHubClient` in `auto_healer/github.py` had all three methods mocked (`create_branch`, `create_commit`, `create_pull_request` all returned hardcoded values); now uses real GitHub REST API v3 calls via `httpx` — creates branches from live HEAD SHA, commits files with base64-encoded content (handles create and update), and opens real PRs returning the actual HTML URL
+
+---
+
 ## [1.4.5] — 2026-03-12
 
 ### Fixed

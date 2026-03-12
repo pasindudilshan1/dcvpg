@@ -1,22 +1,21 @@
 import logging
 from dcvpg.engine.models import ValidationReport
+from dcvpg.ai_agents.base_agent import BaseAgent
 
 logger = logging.getLogger(__name__)
 
-# LLM functionality mocked out for initial phase scaffolding
-class RootCauseAgent:
+
+class RootCauseAgent(BaseAgent):
     """
-    Subscribes to quarantine events asynchronously.
-    Reads metadata and queries git diffs or pipeline DAG history to
-    suggest the probable cause of the breakage to engineers on Slack.
+    Subscribes to quarantine events and uses an LLM to suggest the probable
+    root cause of contract violations to engineers.
+    Falls back to a structured template if the LLM is unavailable.
     """
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-        
-    def analyze_incident(self, report: ValidationReport) -> str:
-        
-        logger.info(f"RCA Agent investigating {report.contract_name}")
-        # E.g. prompt = load(prompt); context = build_context(report)
-        # response = LLM(prompt, context)
-        
-        return "Possible Root Cause: A frontend engineer deployed a form change (Commit #a1b2c3d4) turning 'age' input from int to varchar."
+
+    def __init__(self, api_key: str = None):
+        super().__init__(api_key=api_key)
+
+    def analyze_incident(self, report: ValidationReport, schema_diff: dict = None) -> str:
+        from dcvpg.ai_agents.rca_agent.report_builder import ReportBuilder
+        builder = ReportBuilder(api_key=self.api_key)
+        return builder.build_rca_report(report, schema_diff=schema_diff)
