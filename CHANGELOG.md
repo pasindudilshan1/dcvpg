@@ -10,6 +10,13 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.9] — 2026-03-12
+
+### Fixed
+- `GET /reports/drift` — was always returning `{"drifts": []}` (stub); now performs real schema drift detection by fetching a live sample from each contract's source, inferring the column schema via `infer_schema_from_dataframe`, and diffing against the contract declaration using the existing `compute_schema_diff` engine
+
+---
+
 ## [1.3.8] — 2026-03-12
 
 ### Fixed
