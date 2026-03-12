@@ -35,3 +35,10 @@ alerting:
     webhook_env: SLACK_WEBHOOK_URL
     channel: "#data-ops"
     mention_owners: true
+
+# Autowatch: if enabled=true, validation runs automatically in the background
+# when the API server starts. Alerts fire on any failure.
+# If enabled=false, run `dcvpg validate --all` manually (or use `dcvpg watch`).
+autowatch:
+  enabled: false
+  interval_seconds: 60

@@ -58,6 +58,10 @@ class AlertingConfig(BaseModel):
     teams: Optional[TeamsConfig] = None
     custom_alerter: Optional[CustomAlerterConfig] = None
 
+class AutowatchConfig(BaseModel):
+    enabled: bool = False
+    interval_seconds: int = 60
+
 class DCVPGConfig(BaseModel):
     project: ProjectConfig
     contracts: ContractsConfig
@@ -65,6 +69,7 @@ class DCVPGConfig(BaseModel):
     extensions: Optional[ExtensionsConfig] = None
     database: DatabaseConfig
     alerting: AlertingConfig
+    autowatch: AutowatchConfig = AutowatchConfig()
     ai: Optional[Dict[str, Any]] = None
     mcp: Optional[Dict[str, Any]] = None
     api: Optional[Dict[str, Any]] = None

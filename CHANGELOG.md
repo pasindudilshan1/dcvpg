@@ -10,6 +10,22 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.1] — 2026-03-12
+
+### Added
+- `autowatch` config block in `dcvpg.config.yaml` — when `enabled: true`, the API server automatically starts a background thread that runs validation every `interval_seconds` (default 60); alerts fire on failure; dashboard reflects each run automatically. When `enabled: false` (default), validation is manual only via `dcvpg validate --all` or `dcvpg watch`
+
+---
+
+## [1.4.0] — 2026-03-12
+
+### Added
+- `dcvpg watch --interval N` command — continuously runs `dcvpg validate --all` every N seconds; alerts fire automatically on failure; dashboard updates after each run
+- Automatic alert dispatch in `dcvpg validate` — on contract failure, `AlertManager` is invoked to fire Slack, PagerDuty, or custom alerts if configured in `dcvpg.config.yaml`
+- Dashboard overview page auto-refreshes every 30 seconds via `<meta http-equiv="refresh">`; configurable via `DCVPG_DASHBOARD_REFRESH_SECS` env var
+
+---
+
 ## [1.3.9] — 2026-03-12
 
 ### Fixed

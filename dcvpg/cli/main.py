@@ -2,6 +2,7 @@ import click
 from .commands.init import init
 from .commands.generate import generate
 from .commands.validate import validate
+from .commands.watch import watch
 from .commands.register import register
 from .commands.diff import diff
 from .commands.status import status
@@ -23,6 +24,7 @@ def cli():
 cli.add_command(init)
 cli.add_command(generate)
 cli.add_command(validate)
+cli.add_command(watch)
 cli.add_command(register)
 cli.add_command(diff)
 cli.add_command(status)

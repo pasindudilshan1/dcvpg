@@ -113,7 +113,7 @@ def validate(validate_all, contract, config_path):
                     batch_id = str(uuid.uuid4())
                     quarantine = QuarantineEngine(config.database.model_dump())
                     quarantine.isolate_batch(report, batch_id)
-                    # Also persist each violation group as a quarantine event
+                    # Persist each violation group as a quarantine event
                     for v in report.violation_details:
                         store.save_quarantine({
                             "batch_id": batch_id,
@@ -124,6 +124,18 @@ def validate(validate_all, contract, config_path):
                             "affected_field": v.field or "unknown",
                             "rows_affected": v.rows_affected or 0,
                         })
+                    # Fire alerts to all configured channels (Slack, PagerDuty, etc.)
+                    if config.alerting:
+                        try:
+                            from dcvpg.alerting.alert_manager import AlertManager
+                            alert_manager = AlertManager(config.alerting.model_dump())
+                            alert_manager.dispatch_alert(
+                                title=f"Contract violation: {c.name}",
+                                report=report,
+                                severity="CRITICAL",
+                            )
+                        except Exception as alert_err:
+                            click.echo(f"  ⚠️  Alert dispatch failed: {alert_err}")
 
             except Exception as e:
                 click.echo(f"  💥 Error validating {c.name}: {e}")

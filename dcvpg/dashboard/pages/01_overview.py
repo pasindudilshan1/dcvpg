@@ -7,6 +7,14 @@ from app import fetch_api
 
 st.title("📊 Overview")
 
+# Auto-refresh every 30 seconds so the dashboard reflects new validation runs
+refresh_interval = int(os.environ.get("DCVPG_DASHBOARD_REFRESH_SECS", "30"))
+st.markdown(
+    f'<meta http-equiv="refresh" content="{refresh_interval}">',
+    unsafe_allow_html=True,
+)
+st.caption(f"Auto-refreshes every {refresh_interval}s — set `DCVPG_DASHBOARD_REFRESH_SECS` to change.")
+
 pipelines = fetch_api("pipelines")
 reports = fetch_api("reports/incidents")
 
