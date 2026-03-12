@@ -10,6 +10,15 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.3] — 2026-03-12
+
+### Fixed
+- Autowatch background thread was only started inside the API server lifespan (`dcvpg serve api`); `dcvpg serve dashboard` had no validation loop, so violations never appeared unless the user ran `dcvpg validate --all` or `dcvpg watch` manually. Both `dcvpg serve api` and `dcvpg serve dashboard` now start the autowatch thread when `autowatch.enabled: true` in config
+- Autowatch first validation run now happens **immediately** on startup — previously it waited one full `interval_seconds` before the first check
+- Extracted shared autowatch logic into `dcvpg/engine/autowatch.py` (`start_if_enabled(config_path)`) used by both serve commands, eliminating duplicated threading code
+
+---
+
 ## [1.4.2] — 2026-03-12
 
 ### Changed

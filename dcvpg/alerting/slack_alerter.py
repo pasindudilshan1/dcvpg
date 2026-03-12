@@ -13,11 +13,11 @@ class SlackAlerter(BaseAlerter):
     def send_alert(self, severity: str, title: str, metadata: Dict[str, Any]) -> bool:
         webhook_env_name = self.config.get("webhook_env")
         webhook_url = os.environ.get(webhook_env_name) if webhook_env_name else None
-        
+
         if not webhook_url:
             logger.error("Slack webhook URL not found in config/env")
             return False
-            
+
         # Build block kit message
         blocks = [
             {
@@ -29,27 +29,34 @@ class SlackAlerter(BaseAlerter):
                 "text": {"type": "mrkdwn", "text": f"*Pipeline:* {metadata.get('pipeline_name')}\n*Contract:* {metadata.get('contract_name')} v{metadata.get('contract_version')}\n*Status:* FAILED"}
             }
         ]
-        
-        # Add violation details
+
         if "violation_details" in metadata:
-            for v in metadata["violation_details"][:3]: # Max 3 to not spam
+            for v in metadata["violation_details"][:3]:
                 blocks.append({
                     "type": "section",
                     "text": {"type": "mrkdwn", "text": f"• *Field:* `{v.get('field')}`\n  *Violation:* {v.get('violation_type')}\n  *Expected:* {v.get('expected_value')}\n  *Rows Affected:* {v.get('rows_affected')}"}
                 })
-        
+
         if self.config.get("mention_owners") and severity == "CRITICAL":
-            # In a real scenario we'd map team names to Slack IDs
-            owner = metadata.get("owner_team", "@data-eng-team")
-            source = metadata.get("source_owner", "@source-team")
+            owner = metadata.get("owner_team", "data-eng-team")
+            source = metadata.get("source_owner", "source-team")
             blocks.append({
                 "type": "section",
                 "text": {"type": "mrkdwn", "text": f"*Owners:* {owner} | *Source:* {source}"}
             })
 
         payload = {"blocks": blocks}
-        
-        # httpx post to Slack
-        # response = httpx.post(webhook_url, json=payload)
-        logger.info(f"SLACK DUMMY DISPATCH: {json.dumps(payload)}")
-        return True
+
+        try:
+            import httpx
+            response = httpx.post(webhook_url, json=payload, timeout=10)
+            if response.status_code == 200:
+                logger.info(f"Slack alert sent: {title}")
+                return True
+            else:
+                logger.error(f"Slack returned {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            logger.error(f"Slack alert failed: {e}")
+            return False
+

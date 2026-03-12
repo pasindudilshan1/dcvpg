@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from typing import Dict, Any
@@ -35,6 +34,15 @@ class WebhookAlerter(BaseAlerter):
             **metadata,
         }
 
-        # Production: use httpx.post(webhook_url, json=payload, headers=headers)
-        logger.info(f"WEBHOOK DUMMY DISPATCH → {webhook_url}: {json.dumps(payload)}")
-        return True
+        try:
+            import httpx
+            response = httpx.post(webhook_url, json=payload, headers=headers, timeout=10)
+            if response.status_code < 300:
+                logger.info(f"Webhook alert sent to {webhook_url}")
+                return True
+            else:
+                logger.error(f"Webhook returned {response.status_code}: {response.text}")
+                return False
+        except Exception as e:
+            logger.error(f"Webhook alert failed: {e}")
+            return False

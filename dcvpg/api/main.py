@@ -3,27 +3,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import APIKeyHeader
 from .routers import contracts, pipelines, quarantine, reports, generate
 import os
-import threading
-import time
 import logging
 
 logger = logging.getLogger(__name__)
 
-
-def _run_validation_loop(config_path: str, interval: int):
-    """Background thread: runs `dcvpg validate --all` on a schedule."""
-    import subprocess, sys
-    logger.info(f"Autowatch started — validating every {interval}s")
-    while True:
-        time.sleep(interval)
-        try:
-            logger.info("Autowatch: running validation...")
-            subprocess.run(
-                [sys.executable, "-m", "dcvpg", "validate", "--all", "--config", config_path],
-                capture_output=True,
-            )
-        except Exception as e:
-            logger.error(f"Autowatch validation error: {e}")
 
 
 @asynccontextmanager
@@ -31,23 +14,11 @@ async def lifespan(app: FastAPI):
     from dcvpg.monitoring.metrics import start_metrics_server
     start_metrics_server(port=int(os.environ.get("METRICS_PORT", "9090")))
 
-    # Start background validation loop if autowatch is enabled in config
     config_path = os.environ.get("DCVPG_CONFIG_PATH", "./dcvpg.config.yaml")
-    if os.path.exists(config_path):
-        try:
-            from dcvpg.config.config_loader import load_config
-            cfg = load_config(config_path)
-            if cfg.autowatch.enabled:
-                interval = cfg.autowatch.interval_seconds
-                t = threading.Thread(
-                    target=_run_validation_loop,
-                    args=(config_path, interval),
-                    daemon=True,
-                )
-                t.start()
-                logger.info(f"Autowatch thread started (interval={interval}s)")
-        except Exception as e:
-            logger.warning(f"Could not start autowatch: {e}")
+    from dcvpg.engine.autowatch import start_if_enabled
+    started = start_if_enabled(config_path)
+    if started:
+        logger.info("Autowatch running — validation starts immediately")
 
     yield
 
