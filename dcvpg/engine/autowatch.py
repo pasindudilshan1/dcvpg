@@ -75,6 +75,19 @@ def _run_validation(config_path: str) -> None:
             engine = Validator(c, custom_dir)
             report = engine.validate_batch(df, pipeline_name=c.name, duration_ms=duration_ms)
 
+            # --- Anomaly detection (statistical, no LLM required) ---
+            anomalies = []
+            try:
+                from dcvpg.ai_agents.anomaly_detector.detector_agent import AnomalyDetectorAgent
+                baselines_path = os.path.join(os.path.dirname(os.path.abspath(config_path)), ".dcvpg", "baselines")
+                anomaly_agent = AnomalyDetectorAgent(store_path=baselines_path)
+                anomalies = anomaly_agent.detect(c, df)
+                if anomalies:
+                    logger.warning(f"Autowatch: {len(anomalies)} anomaly(ies) in '{c.name}': "
+                                   + ", ".join(a["anomaly_type"] for a in anomalies))
+            except Exception as anomaly_err:
+                logger.warning(f"Autowatch: anomaly detection skipped for {c.name}: {anomaly_err}")
+
             store.save_run({
                 "pipeline_name": c.name,
                 "contract_name": c.name,
@@ -84,6 +97,7 @@ def _run_validation(config_path: str) -> None:
                 "violations_count": report.violations_count,
                 "duration_ms": duration_ms,
                 "violation_details": [v.model_dump(exclude_none=True) for v in report.violation_details],
+                "anomalies": anomalies,
             })
 
             if report.status != "PASSED":
@@ -100,6 +114,16 @@ def _run_validation(config_path: str) -> None:
                         "affected_field": v.field or "unknown",
                         "rows_affected": v.rows_affected or 0,
                     })
+
+                # --- Root Cause Analysis (LLM, optional — skipped if no ANTHROPIC_API_KEY) ---
+                try:
+                    from dcvpg.ai_agents.rca_agent.rca import RootCauseAgent
+                    rca = RootCauseAgent()
+                    rca_report = rca.analyze_incident(report)
+                    logger.info(f"Autowatch RCA for {c.name}:\n{rca_report}")
+                except Exception as rca_err:
+                    logger.debug(f"Autowatch: RCA skipped for {c.name}: {rca_err}")
+
                 if config.alerting:
                     try:
                         from dcvpg.alerting.alert_manager import AlertManager

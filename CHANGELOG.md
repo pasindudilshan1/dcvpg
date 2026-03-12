@@ -10,6 +10,18 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.7] — 2026-03-12
+
+### Fixed
+- `POST /contracts/generate` in `api/routers/generate.py` returned hardcoded fake data; now fetches a live sample from the configured data source, runs `ContractGeneratorAgent` (LLM-powered), saves the generated YAML to `contracts/generated/`, and returns the full YAML content
+- `POST /contracts/{name}/fix` endpoint was missing entirely — the schema drift dashboard "Open Fix PR" button called it but got 404; now runs live validation, calls `AutoHealerAgent` to propose a corrected contract via LLM, and opens a real GitHub PR; requires `GITHUB_TOKEN` and `GITHUB_REPO` env vars
+- `AnomalyDetectorAgent` and `RootCauseAgent` were never called anywhere — both agents existed but had no callers. Now wired into both `dcvpg validate` CLI and the `autowatch` background loop:
+  - After each validation, `AnomalyDetectorAgent` runs statistical checks (volume, null-rate, distribution) against rolling baselines persisted in `.dcvpg/baselines/`. No LLM required
+  - On failure, `RootCauseAgent` calls Claude to produce a structured root cause analysis report. Gracefully skipped if `ANTHROPIC_API_KEY` is not set
+  - Anomaly results are saved in the run record (`anomalies` field) for future dashboard visibility
+
+---
+
 ## [1.4.6] — 2026-03-12
 
 ### Fixed

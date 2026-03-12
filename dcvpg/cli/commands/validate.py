@@ -88,6 +88,18 @@ def validate(validate_all, contract, config_path):
                 engine = Validator(c, custom_dir)
                 report = engine.validate_batch(df, pipeline_name=c.name, duration_ms=duration_ms)
 
+                # --- Anomaly detection (statistical baselines, no LLM) ---
+                anomalies = []
+                try:
+                    from dcvpg.ai_agents.anomaly_detector.detector_agent import AnomalyDetectorAgent
+                    baselines_path = os.path.join(os.path.dirname(os.path.abspath(config_path)), ".dcvpg", "baselines")
+                    anomaly_agent = AnomalyDetectorAgent(store_path=baselines_path)
+                    anomalies = anomaly_agent.detect(c, df)
+                    if anomalies:
+                        click.echo(f"  ⚠️  {len(anomalies)} anomaly(ies): " + ", ".join(a["anomaly_type"] for a in anomalies))
+                except Exception as anomaly_err:
+                    click.echo(f"  ℹ️  Anomaly detection skipped: {anomaly_err}")
+
                 # Persist run to the file-based store so the API/dashboard can read it
                 store.save_run({
                     "pipeline_name": c.name,
@@ -98,6 +110,7 @@ def validate(validate_all, contract, config_path):
                     "violations_count": report.violations_count,
                     "duration_ms": duration_ms,
                     "violation_details": [v.model_dump(exclude_none=True) for v in report.violation_details],
+                    "anomalies": anomalies,
                 })
 
                 if report.status == "PASSED":
@@ -124,6 +137,16 @@ def validate(validate_all, contract, config_path):
                             "affected_field": v.field or "unknown",
                             "rows_affected": v.rows_affected or 0,
                         })
+
+                    # --- Root Cause Analysis (LLM via Claude, skipped if no ANTHROPIC_API_KEY) ---
+                    try:
+                        from dcvpg.ai_agents.rca_agent.rca import RootCauseAgent
+                        rca = RootCauseAgent()
+                        rca_report = rca.analyze_incident(report)
+                        click.echo(f"\n  🧠 Root Cause Analysis:\n{rca_report}\n")
+                    except Exception as rca_err:
+                        click.echo(f"  ℹ️  RCA skipped (set ANTHROPIC_API_KEY to enable): {rca_err}")
+
                     # Fire alerts to all configured channels (Slack, PagerDuty, etc.)
                     if config.alerting:
                         try:
