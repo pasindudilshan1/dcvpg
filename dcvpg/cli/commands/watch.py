@@ -8,10 +8,9 @@ import sys
 @click.command()
 @click.option(
     "--interval",
-    default=60,
-    show_default=True,
+    default=None,
     type=int,
-    help="Seconds between validation runs.",
+    help="Seconds between validation runs. Overrides autowatch.interval_seconds in config.",
 )
 @click.option(
     "--config",
@@ -24,18 +23,28 @@ def watch(interval, config_path):
     """
     Continuously validate all contracts on a schedule.
 
-    Runs `dcvpg validate --all` every INTERVAL seconds.
-    Alerts are fired automatically on failure via the alerting config.
-    The dashboard and API will reflect each run immediately.
+    Reads autowatch.interval_seconds from dcvpg.config.yaml by default.
+    Pass --interval to override. Alerts fire automatically on failure.
 
     Example:
-        dcvpg watch --interval 300   # validate every 5 minutes
+        dcvpg watch               # uses interval from config (default 60s)
+        dcvpg watch --interval 30
     """
     if not os.path.exists(config_path):
         click.echo(f"Error: Config file not found: {config_path}")
         raise SystemExit(1)
 
-    click.echo(f"👁  Watching — validating every {interval}s. Press Ctrl+C to stop.")
+    # Read interval from config if not overridden on CLI
+    effective_interval = interval
+    if effective_interval is None:
+        try:
+            from dcvpg.config.config_loader import load_config
+            cfg = load_config(config_path)
+            effective_interval = cfg.autowatch.interval_seconds
+        except Exception:
+            effective_interval = 60
+
+    click.echo(f"👁  Watching — validating every {effective_interval}s. Press Ctrl+C to stop.")
     click.echo(f"    Config: {os.path.abspath(config_path)}\n")
 
     run_count = 0
@@ -54,5 +63,5 @@ def watch(interval, config_path):
         else:
             click.echo(f"  → Violations found — alerts dispatched, batches quarantined.\n")
 
-        click.echo(f"    Next run in {interval}s...\n")
-        time.sleep(interval)
+        click.echo(f"    Next run in {effective_interval}s...\n")
+        time.sleep(effective_interval)

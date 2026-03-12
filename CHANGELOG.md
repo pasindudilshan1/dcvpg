@@ -10,6 +10,17 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.2] — 2026-03-12
+
+### Changed
+- `dcvpg watch` now reads `autowatch.interval_seconds` from config automatically; `--interval` flag overrides it. No need to pass a value manually if config is set
+- Dashboard overview page: removed `<meta>` auto-refresh; replaced with a manual **Refresh** button so the user controls when to reload
+
+### Fixed
+- Autowatch background thread only runs when the API server (`uvicorn`) is started; `dcvpg watch` is the correct way to run continuous validation without the server
+
+---
+
 ## [1.4.1] — 2026-03-12
 
 ### Added
