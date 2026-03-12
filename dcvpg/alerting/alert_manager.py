@@ -64,7 +64,12 @@ class AlertManager:
                 alerter_threshold = alerter.config.get("severity_threshold")
                 if alerter_threshold and levels.get(severity, 0) < levels.get(alerter_threshold, 2):
                     continue
-                    
-                alerter.send_alert(severity, title, metadata)
+
+                result = alerter.send_alert(severity, title, metadata)
+                if not result:
+                    logger.warning(
+                        f"{alerter.__class__.__name__}: send_alert returned False — "
+                        f"check logs above for the specific reason (missing URL, HTTP error, etc.)"
+                    )
             except Exception as e:
                 logger.error(f"Alerter {alerter.__class__.__name__} failed to dispatch: {e}")

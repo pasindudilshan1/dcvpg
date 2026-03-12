@@ -11,11 +11,23 @@ class SlackAlerter(BaseAlerter):
     Sends structured messages to Slack using an incoming Webhook URL.
     """
     def send_alert(self, severity: str, title: str, metadata: Dict[str, Any]) -> bool:
+        # Resolve URL: try env var first, then direct webhook_url in config
+        webhook_url = None
         webhook_env_name = self.config.get("webhook_env")
-        webhook_url = os.environ.get(webhook_env_name) if webhook_env_name else None
-
+        if webhook_env_name:
+            webhook_url = os.environ.get(webhook_env_name)
+            if not webhook_url:
+                logger.warning(
+                    f"Slack: env var '{webhook_env_name}' is not set — "
+                    f"falling back to webhook_url in config"
+                )
         if not webhook_url:
-            logger.error("Slack webhook URL not found in config/env")
+            webhook_url = self.config.get("webhook_url")
+        if not webhook_url:
+            logger.error(
+                "Slack alert skipped: no webhook URL found. "
+                "Set the env var referenced by webhook_env, or add webhook_url directly to config."
+            )
             return False
 
         # Build block kit message

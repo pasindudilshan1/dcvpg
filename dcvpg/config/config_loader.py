@@ -33,7 +33,8 @@ class DatabaseConfig(BaseModel):
 
 class SlackConfig(BaseModel):
     enabled: bool = False
-    webhook_env: Optional[str] = None
+    webhook_env: Optional[str] = None   # name of the env var that holds the URL
+    webhook_url: Optional[str] = None   # direct URL (fallback if webhook_env not set)
     channel: Optional[str] = None
     mention_owners: bool = False
 

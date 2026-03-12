@@ -10,12 +10,16 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-## [1.4.3] — 2026-03-12
+## [1.4.4] — 2026-03-12
 
 ### Fixed
-- Autowatch background thread was only started inside the API server lifespan (`dcvpg serve api`); `dcvpg serve dashboard` had no validation loop, so violations never appeared unless the user ran `dcvpg validate --all` or `dcvpg watch` manually. Both `dcvpg serve api` and `dcvpg serve dashboard` now start the autowatch thread when `autowatch.enabled: true` in config
-- Autowatch first validation run now happens **immediately** on startup — previously it waited one full `interval_seconds` before the first check
-- Extracted shared autowatch logic into `dcvpg/engine/autowatch.py` (`start_if_enabled(config_path)`) used by both serve commands, eliminating duplicated threading code
+- `SlackAlerter`, `PagerDutyAlerter`, `WebhookAlerter` — all three had the actual HTTP call commented out and only logged `DUMMY DISPATCH`; now use `httpx.post()` with timeout and proper error handling
+- `SlackAlerter` silently returned `False` when the `webhook_env` variable name was set in config but the env var itself was not exported in the running process — added clear `logger.warning` explaining exactly what is missing, and added `webhook_url` as a direct URL fallback (useful for dev without env var setup)
+- `AlertManager.dispatch_alert()` never checked the return value of `send_alert()` — alerter failures (missing URL, HTTP errors) were completely invisible; now logs a `WARNING` when `send_alert` returns `False`
+- `dcvpg validate` CLI printed nothing when alert dispatch failed/succeeded; now shows `🔔 Alerts dispatched via: SlackAlerter` on success or `ℹ️ No alerters enabled` when config has no active channels
+- Autowatch background thread was only started inside the API server (`dcvpg serve api`); `dcvpg serve dashboard` had no validation loop. Both serve commands now start autowatch when `autowatch.enabled: true`
+- Autowatch first validation run now happens **immediately** on startup instead of waiting one full `interval_seconds`
+- Extracted shared autowatch logic into `dcvpg/engine/autowatch.py` (`start_if_enabled(config_path)`) to eliminate duplicated threading code
 
 ---
 

@@ -129,11 +129,16 @@ def validate(validate_all, contract, config_path):
                         try:
                             from dcvpg.alerting.alert_manager import AlertManager
                             alert_manager = AlertManager(config.alerting.model_dump())
-                            alert_manager.dispatch_alert(
-                                title=f"Contract violation: {c.name}",
-                                report=report,
-                                severity="CRITICAL",
-                            )
+                            if not alert_manager.alerters:
+                                click.echo(f"  ℹ️  No alerters enabled (check alerting config)")
+                            else:
+                                alert_manager.dispatch_alert(
+                                    title=f"Contract violation: {c.name}",
+                                    report=report,
+                                    severity="CRITICAL",
+                                )
+                                channels = ", ".join(a.__class__.__name__ for a in alert_manager.alerters)
+                                click.echo(f"  🔔 Alerts dispatched via: {channels}")
                         except Exception as alert_err:
                             click.echo(f"  ⚠️  Alert dispatch failed: {alert_err}")
 
