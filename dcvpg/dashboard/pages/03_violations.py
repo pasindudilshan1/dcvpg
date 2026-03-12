@@ -34,7 +34,7 @@ else:
                     "Expected": v.get("expected_value"),
                 })
         if rows:
-            st.dataframe(pd.DataFrame(rows), use_container_width=True)
+            st.dataframe(pd.DataFrame(rows), width='stretch')
         else:
             for p in failing:
                 st.warning(

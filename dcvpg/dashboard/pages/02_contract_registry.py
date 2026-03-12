@@ -45,4 +45,4 @@ else:
                 for col in df.columns:
                     if df[col].apply(lambda x: isinstance(x, (list, dict))).any():
                         df[col] = df[col].apply(lambda x: ", ".join(str(v) for v in x) if isinstance(x, list) else (str(x) if isinstance(x, dict) else x))
-                st.dataframe(df, use_container_width=True)
+                st.dataframe(df, width='stretch')

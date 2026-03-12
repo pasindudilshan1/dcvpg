@@ -19,17 +19,17 @@ class AlertManager:
         self._initialize_alerters()
         
     def _initialize_alerters(self):
-        slack_config = self.config.get("slack", {})
+        slack_config = self.config.get("slack") or {}
         if slack_config.get("enabled"):
             self.alerters.append(SlackAlerter(slack_config))
-            
-        pd_config = self.config.get("pagerduty", {})
+
+        pd_config = self.config.get("pagerduty") or {}
         if pd_config.get("enabled"):
             self.alerters.append(PagerDutyAlerter(pd_config))
-            
+
         # TODO: Teams / Webhooks logic here
-        
-        custom_config = self.config.get("custom_alerter", {})
+
+        custom_config = self.config.get("custom_alerter") or {}
         if custom_config.get("enabled"):
             module_path = custom_config.get("module")
             if module_path:

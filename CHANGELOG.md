@@ -10,6 +10,14 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.4.5] — 2026-03-12
+
+### Fixed
+- `AlertManager._initialize_alerters()` crashed with `'NoneType' object has no attribute 'get'` when any alerter (pagerduty, teams, custom_alerter) was absent from config — `model_dump()` serializes missing optional alerters as `None`, and `dict.get(key, {})` returns `None` (not `{}`) when the key exists with a `None` value; fixed by using `or {}` pattern
+- Dashboard: replaced deprecated Streamlit `use_container_width=True` with `width='stretch'` in all four pages (violations, contract_registry, quarantine, ownership)
+
+---
+
 ## [1.4.4] — 2026-03-12
 
 ### Fixed

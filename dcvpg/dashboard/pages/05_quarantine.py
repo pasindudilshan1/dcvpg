@@ -32,7 +32,7 @@ else:
             for b in batches
         ]
         df = pd.DataFrame(rows)
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width='stretch')
 
         st.markdown("### Actions")
         selected_batch = st.selectbox(
