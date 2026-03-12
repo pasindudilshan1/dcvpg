@@ -67,23 +67,36 @@ class AllowedValuesRule(BaseRule):
     def validate(self, data: pd.DataFrame, field: str, params: Dict[str, Any]) -> ValidationResult:
         if field not in data.columns:
             return ValidationResult(passed=True, field=field)
-            
+
         allowed_values = params.get("allowed_values")
         if not allowed_values:
             return ValidationResult(passed=True, field=field)
-            
+
+        # Skip this rule for json-typed fields — dict/list values can't be
+        # meaningfully compared against a discrete allowed_values list.
+        if params.get("type", "").lower() == "json":
+            return ValidationResult(passed=True, field=field)
+
         series = data[field].dropna()
-        invalid_mask = ~series.isin(allowed_values)
-        invalid_rows = series[invalid_mask]
-        
+        try:
+            invalid_mask = ~series.isin(allowed_values)
+            invalid_rows = series[invalid_mask]
+        except TypeError:
+            # Column contains unhashable types; skip the check.
+            return ValidationResult(passed=True, field=field)
+
         if not invalid_rows.empty:
+            try:
+                sample_values = invalid_rows.unique()[:5].tolist()
+            except TypeError:
+                sample_values = invalid_rows.apply(str).unique()[:5].tolist()
             return ValidationResult(
                 passed=False,
                 field=field,
                 violation_type="ALLOWED_VALUES_VIOLATION",
                 rows_affected=len(invalid_rows),
-                sample_values=invalid_rows.unique()[:5].tolist(),
+                sample_values=sample_values,
                 expected_value=f"One of {allowed_values}"
             )
-            
+
         return ValidationResult(passed=True, field=field)

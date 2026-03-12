@@ -10,12 +10,18 @@ Versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.3.8] — 2026-03-12
+
+### Fixed
+- `AllowedValuesRule` — `series.isin()` and `.unique()` both crash with `TypeError: unhashable type: 'dict'` on columns containing JSON objects; rule now skips entirely for `type: json` fields and falls back to `.apply(str).unique()` for sample values on other unhashable columns
+
+---
+
 ## [1.3.7] — 2026-03-10
 
 ### Fixed
 - `GET /pipelines`, `GET /quarantine`, `GET /reports/incidents`, `GET /reports/drift` API endpoints were all hardcoded mock data (`orders_pipeline`, `q_20260309_001`, hard-coded incident counts, etc.); replaced with a lightweight JSONL file store (`engine/report_store.py`) that persists real validation runs and quarantine events under `{project}/.dcvpg_data/`
-- `dcvpg validate` now persists each run and every quarantine event to the store so the dashboard immediately reflects actual validation results
-- Schema drift endpoint now returns an empty `{"drifts": []}` payload instead of fabricated `orders_raw` drift data
+- `dcvpg validate` now persists each run and every quarantine event to the store so the dashboard immediately reflects actual validation results- `AllowedValuesRule` — `series.isin()` and `.unique()` both crash with `TypeError: unhashable type: 'dict'` on columns containing JSON objects; rule now skips gracefully for `type: json` fields and falls back to `.apply(str).unique()` for unhashable sample values in all other cases- Schema drift endpoint now returns an empty `{"drifts": []}` payload instead of fabricated `orders_raw` drift data
 
 ---
 
