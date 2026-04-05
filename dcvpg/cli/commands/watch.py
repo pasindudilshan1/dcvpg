@@ -59,9 +59,9 @@ def watch(interval, config_path):
         )
 
         if result.returncode == 0:
-            click.echo(f"  → All contracts passed.\n")
+            click.echo("  → All contracts passed.\n")
         else:
-            click.echo(f"  → Violations found — alerts dispatched, batches quarantined.\n")
+            click.echo("  → Violations found — alerts dispatched, batches quarantined.\n")
 
         click.echo(f"    Next run in {effective_interval}s...\n")
         time.sleep(effective_interval)

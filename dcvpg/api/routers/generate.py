@@ -1,5 +1,4 @@
 import os
-import uuid
 from fastapi import APIRouter, HTTPException
 from typing import Dict
 

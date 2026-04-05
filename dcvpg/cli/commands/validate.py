@@ -153,7 +153,7 @@ def validate(validate_all, contract, config_path):
                             from dcvpg.alerting.alert_manager import AlertManager
                             alert_manager = AlertManager(config.alerting.model_dump())
                             if not alert_manager.alerters:
-                                click.echo(f"  ℹ️  No alerters enabled (check alerting config)")
+                                click.echo("  ℹ️  No alerters enabled (check alerting config)")
                             else:
                                 alert_manager.dispatch_alert(
                                     title=f"Contract violation: {c.name}",

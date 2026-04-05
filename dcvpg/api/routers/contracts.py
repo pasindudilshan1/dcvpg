@@ -1,7 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional
 import os
+import uuid
+import time
 
 router = APIRouter()
 
@@ -90,7 +92,6 @@ def auto_fix_contract(name: str, body: Optional[Dict[str, Any]] = None):
         from dcvpg.engine.connectors.rest_api_connector import RestApiConnector
         from dcvpg.engine.connectors.file_connector import FileConnector
         from dcvpg.ai_agents.auto_healer.agent import AutoHealerAgent
-        import uuid, time
 
         config_path = os.environ.get("DCVPG_CONFIG_PATH", "./dcvpg.config.yaml")
         config = load_config(config_path)
