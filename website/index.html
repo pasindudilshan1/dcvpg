@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCVPG | Data Contract Validator & Pipeline Guardian</title>
+    <meta name="description" content="Open-source framework for defining, validating, and enforcing data contracts in modern data pipelines. Prevent silent pipeline failures.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 32 32" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 2L2 9L16 16L30 9L16 2Z" fill="var(--primary)"/>
+                  <path d="M2 23L16 30L30 23V9L16 16L2 9V23Z" fill="var(--primary-hover)" opacity="0.85"/>
+                  <path d="M16 16v14" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                DCVPG
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#scenarios">Data Engineer Scenarios</a>
+                <a href="#docs-catalog">Documentation</a>
+                <a href="https://github.com/pasindudilshan1/dcvpg" class="btn btn-outline" target="_blank">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                    GitHub
+                </a>
+                <button class="theme-toggle" id="theme-btn" aria-label="Toggle Night Mode">🌙</button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" id="hero-section">
+        <canvas id="hero-blockchain-canvas"></canvas>
+        <div class="container hero-container">
+            <div class="hero-content">
+                <div class="badge">v1.4.8 Available Now</div>
+                <h1>Data Contracts as <br><span class="gradient-text">Code-Reviewed Guards</span></h1>
+                <p class="hero-subtitle">
+                    Catch schema drift, quality violations, and SLA breaches <strong>before</strong> they reach production. The open-source data guardian for modern pipelines.
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary" onclick="copyInstall()">
+                        pip install "dcvpg[all]" 
+                        <svg class="copy-icon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <a href="#scenarios" class="btn btn-secondary">Explore Scenarios</a>
+                </div>
+                <div class="integrations">
+                    <span>Integrates with:</span>
+                    <div class="integration-icons">
+                        <span class="pill">Airflow</span>
+                        <span class="pill">Dagster</span>
+                        <span class="pill">Prefect</span>
+                        <span class="pill">Snowflake</span>
+                        <span class="pill">PostgreSQL</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <!-- Our 'Video Visualization' via Terminal Animation -->
+                <div class="terminal">
+                    <div class="mac-header">
+                        <span class="mac-btn close"></span>
+                        <span class="mac-btn minimize"></span>
+                        <span class="mac-btn expand"></span>
+                        <div class="mac-title">bash — dcvpg validate</div>
+                    </div>
+                    <div class="terminal-body" id="term-body">
+                        <!-- Content injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="scenarios" class="scenarios section">
+        <div class="container">
+            <h2 class="section-title">Engineered for <span class="gradient-text">Data Engineers</span></h2>
+            <p class="section-desc">See how DCVPG solves real-world pipeline nightmares automatically with actionable visualizations.</p>
+
+            <div class="scenario-showcase">
+                
+                <!-- Scenario 1: Quarantine -->
+                <div class="showcase-row">
+                    <div class="showcase-text">
+                        <div class="scenario-icon">🛡️</div>
+                        <h3>Quarantine Bad Batches</h3>
+                        <p>Stop silent failures. When upstream sends nulls or schema changes, DCVPG isolates the bad batch in PostgreSQL and prevents downstream BI dashboards from displaying corrupted metrics.</p>
+                        <ul class="feature-list">
+                            <li><strong>Detect:</strong> Identifies schema or value anomalies instantly.</li>
+                            <li><strong>Isolate:</strong> Diverts faulty rows away from production.</li>
+                            <li><strong>Replay:</strong> Easily push data back through once the contract is fixed.</li>
+                        </ul>
+                    </div>
+                    <div class="showcase-visual">
+                        <div class="quarantine-viz">
+                            <div class="data-source">Source Data</div>
+                            <div class="data-stream">
+                                <div class="data-packet good" style="animation-delay: 0s;"></div>
+                                <div class="data-packet bad" style="animation-delay: 1.5s;"></div>
+                                <div class="data-packet good" style="animation-delay: 3s;"></div>
+                            </div>
+                            <div class="router-node">DCVPG Guard</div>
+                            <div class="routes">
+                                <div class="route-prod">
+                                    <div class="data-packet good route-anim" style="animation-delay: 1s;"></div>
+                                    Production WH
+                                </div>
+                                <div class="route-quar">
+                                    <div class="data-packet bad route-anim-bad" style="animation-delay: 2.5s;"></div>
+                                    Quarantine Vault
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 2: AI Auto-Healing -->
+                <div class="showcase-row reverse">
+                    <div class="showcase-text">
+                        <div class="scenario-icon">🤖</div>
+                        <h3>AI Auto-Healing</h3>
+                        <p>When a CRITICAL violation occurs, our LLM agent analyzes the schema drift, proposes a fix to the YAML contract, and opens a GitHub PR automatically for your review.</p>
+                        <ul class="feature-list">
+                            <li><strong>Analyze:</strong> Profiles the live table to detect new types.</li>
+                            <li><strong>Draft:</strong> Adjusts YAML (e.g. Float to String).</li>
+                            <li><strong>PR:</strong> GitHub integration creates tracked fix requests.</li>
+                        </ul>
+                    </div>
+                    <div class="showcase-visual">
+                        <div class="healing-viz">
+                            <div class="code-window">
+                                <div class="mac-header"><div class="mac-title">pull_request.md</div></div>
+                                <div class="pr-body" id="pr-anim-body">
+                                    <div class="pr-title">Update orders_raw YAML: Schema Drift</div>
+                                    <div class="pr-desc">Detected type change in column 'status' from string -> varchar(50)</div>
+                                    <div class="diff-block">
+                                        <div class="diff-minus">- type: string</div>
+                                        <div class="diff-plus">+ type: varchar(50)</div>
+                                    </div>
+                                    <div class="pr-merge-btn">Review & Merge</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 3: SLA Enforcement -->
+                <div class="showcase-row">
+                    <div class="showcase-text">
+                        <div class="scenario-icon">⏱️</div>
+                        <h3>Enforce SLAs</h3>
+                        <p>Track row-count anomalies and freshness SLA breaches. If an overnight load produces 10x fewer rows than statistically normal, get alerted instantly via Slack or PagerDuty.</p>
+                        <ul class="feature-list">
+                            <li><strong>Freshness:</strong> Guarantee data is no older than N hours.</li>
+                            <li><strong>Volume Control:</strong> Alert when row volumes fall out of historical bounds.</li>
+                        </ul>
+                    </div>
+                    <div class="showcase-visual">
+                        <div class="sla-viz">
+                            <div class="chart-container">
+                                <div class="chart-bar normal" style="height: 80%"><span>Mon</span></div>
+                                <div class="chart-bar normal" style="height: 85%"><span>Tue</span></div>
+                                <div class="chart-bar normal" style="height: 75%"><span>Wed</span></div>
+                                <div class="chart-bar alert" style="height: 15%">
+                                    <span>Thu</span>
+                                    <div class="alert-popup" id="sla-popup">SLA BREACH: Row volume -80%</div>
+                                </div>
+                                <div class="chart-baseline">Expected Volume Baseline</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario 4: MCP Chat Ops -->
+                <div class="showcase-row reverse">
+                    <div class="showcase-text">
+                        <div class="scenario-icon">💬</div>
+                        <h3>MCP Chat Ops</h3>
+                        <p>Integrates directly into Claude Desktop or Cursor. Ask questions like <em>"What pipelines are failing?"</em> or <em>"Replay batch abc-123"</em> and manage your platform using natural language.</p>
+                    </div>
+                    <div class="showcase-visual">
+                        <div class="chat-viz">
+                            <div class="chat-message user">
+                                <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" class="avatar">
+                                <div class="bubble">Replay quarantine batch req-891f2a now that PR 42 is merged.</div>
+                            </div>
+                            <div class="chat-message ai" id="ai-chat-reply">
+                                <div class="avatar-robot">🤖</div>
+                                <div class="bubble typing">
+                                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="pipeline section">
+        <div class="container">
+            <div class="pipeline-split">
+                <div class="pipeline-text">
+                    <h2 class="section-title">Zero-Friction <span class="gradient-text">Integration</span></h2>
+                    <p class="section-desc">DCVPG wraps around your existing pipelines. No rewrites needed. You simply add it as a quality gate.</p>
+                    <ul class="feature-list">
+                        <li><strong>1. Profile:</strong> Generate YAML contracts automatically from live tables.</li>
+                        <li><strong>2. Validate:</strong> Run checks explicitly in your Airflow DAG or Prefect flow.</li>
+                        <li><strong>3. Guard:</strong> Violations are quarantined. Valid data flows to production.</li>
+                    </ul>
+                </div>
+                <div class="pipeline-code">
+                    <div class="code-window">
+                        <div class="mac-header"><div class="mac-title">airflow_dag.py</div></div>
+                        <pre><code><span class="comment"># Add a single operator to your existing DAG</span>
+<span class="keyword">from</span> dcvpg.orchestrators.airflow <span class="keyword">import</span> DataContractValidatorOperator
+
+validate = DataContractValidatorOperator(
+    task_id=<span class="string">"validate_orders"</span>,
+    contract_name=<span class="string">"orders_raw"</span>,
+    config_path=<span class="string">"/opt/airflow/dcvpg.config.yaml"</span>,
+)
+
+<span class="comment"># Gate your existing load task</span>
+extract >> transform >> <span class="highlight">validate</span> >> load_to_prod</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="docs-catalog" class="section">
+        <div class="container">
+            <h2 class="section-title">Documentation Catalog</h2>
+            <p class="section-desc">Explore the complete Data Contract Validator & Pipeline Guardian ecosystem.</p>
+
+            <div class="docs-catalog">
+                <!-- Contract Authoring -->
+                <a href="https://github.com/pasindudilshan1/dcvpg/blob/main/dcvpg/docs/contract_authoring.md" target="_blank" class="doc-card">
+                    <div class="doc-visual">
+                        <div class="doc-viz-yaml">
+                            <div><span class="key">contract:</span></div>
+                            <div>&nbsp;&nbsp;<span class="key">name:</span> <span class="string">"orders_raw"</span></div>
+                            <div>&nbsp;&nbsp;<span class="key">schema:</span></div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;- <span class="key">field:</span> <span class="string">"id"</span></div>
+                            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="key">unique:</span> <span class="keyword">true</span></div>
+                        </div>
+                    </div>
+                    <div class="doc-content">
+                        <h4>Contract Authoring</h4>
+                        <p>Full YAML field reference and capabilities for defining nullability, types, and SLAs.</p>
+                    </div>
+                </a>
+
+                <!-- Custom Rules -->
+                <a href="https://github.com/pasindudilshan1/dcvpg/blob/main/dcvpg/docs/custom_rules.md" target="_blank" class="doc-card">
+                    <div class="doc-visual">
+                        <div class="doc-viz-py">
+                            <span class="kw">class</span> <span class="fn">NoWeekendOrders</span>(BaseRule):<br>
+                            &nbsp;&nbsp;<span class="kw">def</span> <span class="fn">validate</span>(self, data, params):<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment"># custom logic execution</span><br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">return</span> ValidationResult(...)
+                        </div>
+                    </div>
+                    <div class="doc-content">
+                        <h4>Custom Rules Extensions</h4>
+                        <p>Write generic Python validation extensions to augment the built-in rule sets.</p>
+                    </div>
+                </a>
+
+                <!-- Connectors -->
+                <a href="https://github.com/pasindudilshan1/dcvpg/blob/main/dcvpg/docs/connectors.md" target="_blank" class="doc-card">
+                    <div class="doc-visual">
+                        <div class="doc-viz-connectors">
+                            <div class="connector-icon" style="color:#336791;">PG</div>
+                            <div class="connector-icon" style="color:#29B5E8;">SN</div>
+                            <div class="connector-icon" style="color:#F25022;">S3</div>
+                            <div class="connector-icon" style="color:#4285F4;">BQ</div>
+                        </div>
+                    </div>
+                    <div class="doc-content">
+                        <h4>Database Connectors</h4>
+                        <p>Configure internal connections for PostgreSQL, Snowflake, S3, GCS, and more.</p>
+                    </div>
+                </a>
+
+                <!-- MCP Setup -->
+                <a href="https://github.com/pasindudilshan1/dcvpg/blob/main/dcvpg/docs/mcp_setup.md" target="_blank" class="doc-card">
+                    <div class="doc-visual" style="flex-direction: column; gap:10px;">
+                        <div style="background:#0a0a0c; color:#fff; padding:5px 15px; border-radius:15px; font-size:0.75rem; align-self: flex-start; margin-left: 20px;">What pipelines failed?</div>
+                        <div style="background:#0067b8; color:#fff; padding:5px 15px; border-radius:15px; font-size:0.75rem; align-self: flex-end; margin-right: 20px;">1 contract violation found in auth_db.</div>
+                    </div>
+                    <div class="doc-content">
+                        <h4>MCP Server Setup</h4>
+                        <p>Integrate directly with Claude Desktop or Cursor for natural language pipeline management.</p>
+                    </div>
+                </a>
+
+                <!-- API Reference -->
+                <a href="https://github.com/pasindudilshan1/dcvpg/blob/main/dcvpg/docs/api_reference.md" target="_blank" class="doc-card">
+                    <div class="doc-visual">
+                        <div class="doc-viz-api">
+                            <div class="api-endpoint">GET /api/v1/contracts</div>
+                            <div class="api-endpoint" style="border-color:#3b82f6; color:#3b82f6; background:#eff6ff;">POST /api/v1/generate</div>
+                            <div class="api-endpoint" style="border-color:#eab308; color:#eab308; background:#fefce8;">PUT /api/v1/quarantine</div>
+                        </div>
+                    </div>
+                    <div class="doc-content">
+                        <h4>REST API endpoints</h4>
+                        <p>Expose and consume backend REST services for orchestrators, scripts, and webhook alerts.</p>
+                    </div>
+                </a>
+
+                <!-- Quickstart -->
+                <a href="https://github.com/pasindudilshan1/dcvpg/blob/main/dcvpg/docs/quickstart.md" target="_blank" class="doc-card">
+                    <div class="doc-visual">
+                        <div class="doc-viz-yaml" style="background:transparent; box-shadow:none; text-align:center;">
+                            <div style="font-size:2rem; margin-bottom:5px;">🚀</div>
+                            <div style="color:var(--text-main); font-family: Segoe UI, sans-serif; font-weight:600;">5 Minutes to Prod</div>
+                        </div>
+                    </div>
+                    <div class="doc-content">
+                        <h4>Quickstart Guide</h4>
+                        <p>Fast track installation, setup, and deploying your very first Data Contract Validator.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">▢</span> DCVPG
+                    <p>The open-source framework for treating data quality as code.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/pasindudilshan1/dcvpg" target="_blank">GitHub</a>
+                    <a href="#">Documentation</a>
+                    <a href="#">PyPI</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DCVPG Project. Released under Apache 2.0 License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
