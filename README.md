@@ -3,7 +3,7 @@
 [![CI](https://github.com/pasindudilshan1/dcvpg/actions/workflows/ci.yml/badge.svg)](https://github.com/pasindudilshan1/dcvpg/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/dcvpg)](https://pypi.org/project/dcvpg/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/pypi/pyversions/dcvpg)](https://pypi.org/project/dcvpg/)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://pypi.org/project/dcvpg/)
 
 **DCVPG** is an open-source framework for defining, validating, and enforcing data contracts in modern data pipelines. It catches schema drift, quality violations, and freshness SLA breaches **before they reach production**.
 
