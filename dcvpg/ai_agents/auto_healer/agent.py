@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Optional
+from typing import Optional, Any
 
 from dcvpg.engine.models import ValidationReport
 from dcvpg.ai_agents.base_agent import BaseAgent
@@ -110,7 +110,66 @@ class AutoHealerAgent(BaseAgent):
                 f"Return ONLY the corrected contract YAML starting with 'contract:'."
             )
         try:
-            return self.call_llm(prompt, system="You are a data contract YAML expert.")
+            fixed_yaml = self.call_llm(prompt, system="You are a data contract YAML expert.")
+            # Post-fix validation: ensure type consistency with allowed_values
+            fixed_yaml = self._validate_type_consistency(fixed_yaml)
+            return fixed_yaml
         except Exception as e:
             logger.warning(f"AutoHealer LLM call failed: {e}. Using original contract.")
             return current_yaml or "# AutoHealer could not generate fix\n"
+    
+    def _validate_type_consistency(self, yaml_content: str) -> str:
+        """Validate and fix type/allowed_values consistency in the contract YAML."""
+        import yaml
+        try:
+            data = yaml.safe_load(yaml_content)
+            if not data or "contract" not in data:
+                return yaml_content
+            
+            contract = data["contract"]
+            if "schema" not in contract:
+                return yaml_content
+            
+            schema = contract["schema"]
+            for field in schema:
+                if "allowed_values" not in field or "type" not in field:
+                    continue
+                
+                allowed_vals = field["allowed_values"]
+                if not allowed_vals:
+                    continue
+                
+                # Infer expected type from allowed_values
+                sample = allowed_vals[0]
+                inferred_type = self._infer_type(sample)
+                
+                # If mismatch, fix the type
+                if inferred_type and field["type"] != inferred_type:
+                    logger.warning(
+                        f"Type mismatch in field '{field.get('field', '?')}': "
+                        f"type={field['type']} but allowed_values suggest {inferred_type}. Fixing..."
+                    )
+                    field["type"] = inferred_type
+            
+            # Re-serialize to YAML
+            return yaml.dump(data, default_flow_style=False, allow_unicode=True)
+        except Exception as e:
+            logger.warning(f"Type consistency validation failed: {e}. Returning original YAML.")
+            return yaml_content
+    
+    @staticmethod
+    def _infer_type(value: Any) -> Optional[str]:
+        """Infer JSON schema type from a Python value."""
+        if isinstance(value, bool):
+            return "boolean"
+        elif isinstance(value, int):
+            return "integer"
+        elif isinstance(value, float):
+            return "number"
+        elif isinstance(value, str):
+            return "string"
+        elif isinstance(value, dict):
+            return "json"
+        elif isinstance(value, list):
+            return "array"
+        return None

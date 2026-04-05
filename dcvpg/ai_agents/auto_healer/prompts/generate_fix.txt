@@ -16,5 +16,9 @@ Rules:
 - Fix only what is broken: type mismatches, missing fields, wrong constraints
 - Do NOT add new required fields that don't exist in the live schema
 - Keep the same contract name, version (increment patch only), owner_team, source_owner
+- CRITICAL: If a field has allowed_values, ensure the type matches the actual data type of those values
+  * If allowed_values are strings (e.g., ["a", "b"]), type MUST be string
+  * If allowed_values are numbers (e.g., [1, 2, 3]), type MUST be integer or float
+  * Never have conflicts between type and allowed_values
 
 Return ONLY the corrected YAML content. Start with `contract:`. No explanation, no code fences.

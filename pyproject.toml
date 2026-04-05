@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dcvpg"
-version = "1.4.7"
+version = "1.4.8"
 description = "Data Contract Validator and Pipeline Guardian — generic, open-source"
 authors = [{ name = "Data Engineering", email = "pasindupremarathna11@gmail.com" }]
 license = { text = "Apache-2.0" }
