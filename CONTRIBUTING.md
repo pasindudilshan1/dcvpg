@@ -89,4 +89,4 @@ Please open a GitHub Issue with:
 
 ## Security Issues
 
-For security vulnerabilities, please **do not** open a public issue. Email security@your-org.com instead.
+For security vulnerabilities, please **do not** open a public issue. 
